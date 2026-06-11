@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Pump Prices — M&M Oil & Gas Ltd</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;font-size:14px}
+body{background:#060912;color:#E2E8F0;min-height:100vh;display:flex;flex-direction:column}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:inherit;border:none}
+input,select,textarea{font-family:inherit}
+.layout{display:flex;flex:1;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:230px;flex-shrink:0;background:#04060E;border-right:1px solid rgba(255,255,255,.06);
+  display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:transform .3s}
+.sb-top{padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sb-logo{display:block;margin-bottom:14px}
+.sb-logo img{height:38px;width:auto;display:block}
+.sb-station-pill{display:flex;align-items:center;gap:9px;border:1px solid;border-radius:10px;padding:9px 12px}
+.sb-live-dot{width:7px;height:7px;border-radius:50%;background:#34D399;box-shadow:0 0 6px rgba(52,211,153,.8);flex-shrink:0}
+.sb-sname{font-size:12px;font-weight:700;letter-spacing:-.1px}
+.sb-stag{font-size:9px;color:rgba(255,255,255,.35);letter-spacing:.5px;margin-top:1px}
+.sb-nav{flex:1;overflow-y:auto;padding:10px 10px}
+.sb-section{font-size:9.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(255,255,255,.25);padding:13px 10px 6px}
+.sb-lnk{display:flex;align-items:center;padding:9px 12px;border-radius:8px;
+  font-size:13px;font-weight:500;color:rgba(255,255,255,.5);
+  transition:all .15s;margin-bottom:2px}
+.sb-lnk:hover{background:rgba(255,255,255,.05);color:#fff}
+.sb-active{background:rgba(29,78,216,.15);color:#93C5FD;font-weight:700;border:1px solid rgba(29,78,216,.25)}
+.sb-foot{padding:12px;border-top:1px solid rgba(255,255,255,.06)}
+.sb-user{display:flex;align-items:center;gap:9px;padding:8px 10px;
+  background:rgba(255,255,255,.04);border-radius:9px;margin-bottom:8px}
+.sb-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
+.sb-uname{font-size:12px;font-weight:700;color:#fff}
+.sb-urole{font-size:9.5px;color:rgba(255,255,255,.35);margin-top:1px}
+.sb-logout{width:100%;padding:8px;border-radius:8px;background:rgba(239,68,68,.08);
+  border:1px solid rgba(239,68,68,.15);color:rgba(239,68,68,.7);font-size:12px;font-weight:600;
+  transition:all .15s}
+.sb-logout:hover{background:rgba(239,68,68,.18);color:#F87171}
+.sb-overlay{display:none;position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.6)}
+.sb-overlay.on{display:block}
+
+/* MAIN */
+.main{margin-left:230px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+
+/* TOPBAR */
+.topbar{height:62px;background:rgba(4,6,14,.96);border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;justify-content:space-between;padding:0 24px;
+  position:sticky;top:0;z-index:80;backdrop-filter:blur(20px)}
+.tb-left{display:flex;align-items:center;gap:12px}
+.tb-menu{display:none;flex-direction:column;gap:5px;width:34px;height:34px;
+  align-items:center;justify-content:center;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);border-radius:8px}
+.tb-menu span{display:block;width:16px;height:1.5px;background:#fff;border-radius:2px}
+.tb-title{font-size:17px;font-weight:800;color:#fff;letter-spacing:-.03em}
+.tb-sub{font-size:11.5px;color:rgba(255,255,255,.35);margin-top:1.5px}
+.tb-right{display:flex;align-items:center;gap:10px}
+.tb-live{display:flex;align-items:center;gap:6px;background:rgba(52,211,153,.1);
+  border:1px solid rgba(52,211,153,.2);border-radius:99px;padding:5px 12px;
+  font-size:11px;font-weight:700;color:#34D399;letter-spacing:.5px}
+.tb-dot{width:6px;height:6px;border-radius:50%;background:#34D399;box-shadow:0 0 6px rgba(52,211,153,.8)}
+.tb-clock{font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,.4);
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);
+  border-radius:7px;padding:5px 11px}
+
+/* CONTENT */
+.content{padding:22px 24px;flex:1}
+
+/* CARD */
+.card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;margin-bottom:16px;overflow:hidden}
+.card-head{display:flex;align-items:center;justify-content:space-between;
+  padding:15px 18px;border-bottom:1px solid rgba(255,255,255,.06)}
+.card-title{font-size:14px;font-weight:700;color:#fff;letter-spacing:-.02em}
+.card-sub{font-size:11.5px;color:rgba(255,255,255,.35);margin-top:2px}
+.card-body{padding:18px}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-full{grid-column:1/-1}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:11.5px;font-weight:600;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.8px}
+.field input,.field select,.field textarea{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:9px;padding:10px 13px;font-size:13.5px;color:#fff;
+  transition:border-color .15s,background .15s;outline:none}
+.field input:focus,.field select,.field textarea:focus{
+  border-color:rgba(59,130,246,.5);background:rgba(255,255,255,.07)}
+.field select option{background:#1a1f2e;color:#fff}
+.field textarea{resize:vertical;min-height:80px}
+.field-calc{background:rgba(29,78,216,.08);border:1px solid rgba(29,78,216,.2);
+  border-radius:9px;padding:10px 13px;font-size:14px;font-weight:700;
+  color:#60A5FA;font-family:'JetBrains Mono',monospace}
+
+/* BUTTONS */
+.btn-p{display:inline-flex;align-items:center;gap:8px;background:#1D4ED8;color:#fff;
+  font-size:14px;font-weight:700;padding:12px 24px;border-radius:10px;
+  box-shadow:0 6px 20px rgba(29,78,216,.3);transition:all .2s;border:none;cursor:pointer}
+.btn-p:hover{background:#1E40AF;transform:translateY(-1px)}
+.btn-ghost{display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.65);font-size:14px;font-weight:600;
+  padding:12px 24px;border-radius:10px;transition:all .2s;cursor:pointer}
+.btn-ghost:hover{background:rgba(255,255,255,.09);color:#fff}
+.btn-sm{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);
+  font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:8px;
+  transition:all .15s;cursor:pointer}
+.btn-sm:hover{background:rgba(255,255,255,.1);color:#fff}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
+  color:rgba(255,255,255,.3);padding:10px 14px;text-align:left;
+  border-bottom:1px solid rgba(255,255,255,.07)}
+.tbl td{font-size:13px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.04);color:rgba(255,255,255,.75)}
+.tbl tr:hover td{background:rgba(255,255,255,.025)}
+.tbl tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;border-radius:99px;padding:3px 9px;
+  font-size:11px;font-weight:700}
+.badge-green{background:rgba(52,211,153,.1);color:#34D399;border:1px solid rgba(52,211,153,.2)}
+.badge-blue{background:rgba(96,165,250,.1);color:#60A5FA;border:1px solid rgba(96,165,250,.2)}
+.badge-purple{background:rgba(167,139,250,.1);color:#A78BFA;border:1px solid rgba(167,139,250,.2)}
+.badge-amber{background:rgba(245,158,11,.1);color:#F59E0B;border:1px solid rgba(245,158,11,.2)}
+.badge-red{background:rgba(248,113,113,.1);color:#F87171;border:1px solid rgba(248,113,113,.2)}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;right:28px;z-index:999;
+  background:#1a2540;border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;padding:14px 18px;min-width:260px;
+  display:flex;align-items:center;gap:12px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+  transform:translateY(20px);opacity:0;
+  transition:all .3s}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-ico{width:32px;height:32px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center}
+.toast-title{font-size:13px;font-weight:700;color:#fff}
+.toast-msg{font-size:12px;color:rgba(255,255,255,.5);margin-top:2px}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sb-overlay.on{display:block}
+  .main{margin-left:0}
+  .tb-menu{display:flex}
+  .form-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+  .form-grid,.form-grid-2{grid-template-columns:1fr}
+  .content{padding:16px}
+}
+
+.sb-logo img{height:38px;width:auto;display:block}
+
+.price-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:20px}
+.price-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:22px;text-align:center;transition:all .2s}
+.price-card:hover{border-color:#D97706;background:rgba(217,119,6,.12);transform:translateY(-3px)}
+.pc-prod{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.4);margin-bottom:5px}
+.pc-name{font-size:12.5px;color:rgba(255,255,255,.5);margin-bottom:14px}
+.pc-price{font-size:34px;font-weight:900;color:#FCD34D;letter-spacing:-.04em;font-family:'JetBrains Mono',monospace}
+.pc-date{font-size:11px;color:rgba(255,255,255,.3);margin-top:5px}
+.modal-bg{display:none;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:#0E1525;border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:28px;width:min(440px,92vw);box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.modal h3{font-size:17px;font-weight:800;color:#fff;margin-bottom:4px}
+.modal p{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:20px}
+@media(max-width:700px){.price-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:420px){.price-grid{grid-template-columns:1fr}}
+
+</style>
+</head><body>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="sb-top">
+    <a href="../index.html" class="sb-logo"><img src="images/msolimpid.png" alt="M&M Oil & Gas Ltd"/></a>
+    <div class="sb-station-pill" style="background:rgba(217,119,6,.12);border-color:rgba(251,191,36,.25)">
+      <span class="sb-live-dot"></span>
+      <div><div class="sb-sname" style="color:#FCD34D">M&M Oil & Gas Ltd</div><div class="sb-stag">MRS Station</div></div>
+    </div>
+  </div>
+  <nav class="sb-nav"><div class="sb-section">Operations</div><a href="dashboard-mrs.html" class="sb-lnk">Dashboard</a><a href="sales-mrs.html" class="sb-lnk">Record Sales</a><a href="discharge-mrs.html" class="sb-lnk">Discharge</a><a href="dip-mrs.html" class="sb-lnk">Tank Dip</a><a href="expenses-mrs.html" class="sb-lnk">Expenses</a><a href="records-mrs.html" class="sb-lnk">Records</a><a href="pnl-mrs.html" class="sb-lnk">P&L Report</a><a href="price-mrs.html" class="sb-lnk sb-active">Pump Prices</a><div class="sb-section">Switch</div><a href="select.html" class="sb-lnk">Switch Station</a></nav>
+  <div class="sb-foot">
+    <div class="sb-user"><div class="sb-avatar" id="sbAvatar" style="background:linear-gradient(135deg,#D97706,#FCD34D)">IE</div><div><div class="sb-uname" id="sbName">Loading...</div><div class="sb-urole" id="sbRole">—</div></div></div>
+    <button class="sb-logout" onclick="doLogout()">Sign Out</button>
+  </div>
+</aside>
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+<div class="main"><header class="topbar">
+  <div class="tb-left">
+    <button class="tb-menu" onclick="openSidebar()"><span></span><span></span><span></span></button>
+    <div><div class="tb-title">Pump Prices</div><div class="tb-sub" id="tbDate"></div></div>
+  </div>
+  <div class="tb-right"><div class="tb-live"><span class="tb-dot"></span>LIVE</div><div class="tb-clock" id="tbClock">--:--:--</div></div>
+</header><div class="content">
+<div class="price-grid"><div class="price-card">
+  <div class="pc-prod">PMS</div>
+  <div class="pc-name">Premium Motor Spirit</div>
+  <div class="pc-price" id="cp-pms">&#x20a6;891</div>
+  <div class="pc-date">Updated: 15 Feb 2024</div>
+  <button class="btn-sm" style="margin-top:14px;width:100%;justify-content:center" onclick="openUpdate('PMS',891)">Update Price</button>
+</div><div class="price-card">
+  <div class="pc-prod">AGO</div>
+  <div class="pc-name">Automotive Gas Oil</div>
+  <div class="pc-price" id="cp-ago">&#x20a6;1,161</div>
+  <div class="pc-date">Updated: 10 Mar 2024</div>
+  <button class="btn-sm" style="margin-top:14px;width:100%;justify-content:center" onclick="openUpdate('AGO',1161)">Update Price</button>
+</div></div>
+<div class="card">
+  <div class="card-head"><div><div class="card-title">Price History</div><div class="card-sub">All recorded price changes</div></div></div>
+  <div style="overflow-x:auto">
+    <table class="tbl">
+      <thead><tr><th>Date</th><th>Product</th><th>Old Price</th><th>New Price</th><th>Change</th><th>Updated By</th></tr></thead>
+      <tbody id="priceHistory"><tr>
+  <td>2024-02-15</td>
+  <td><span class="badge badge-blue">PMS</span></td>
+  <td class="mono">&#x20a6;702</td>
+  <td class="mono" style="color:#FCD34D">&#x20a6;891</td>
+  <td style="color:#34D399">+189</td>
+  <td>Idowu Egba</td>
+</tr><tr>
+  <td>2024-03-10</td>
+  <td><span class="badge badge-blue">AGO</span></td>
+  <td class="mono">&#x20a6;1,100</td>
+  <td class="mono" style="color:#FCD34D">&#x20a6;1,161</td>
+  <td style="color:#34D399">+61</td>
+  <td>Idowu Egba</td>
+</tr></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3 id="modalTitle">Update PMS Price</h3>
+    <p>Enter the new price per litre / kg and effective date.</p>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="field"><label>Current Price</label><div class="field-calc" id="modalCurrent">&#x20a6;—</div></div>
+      <div class="field"><label>New Price per Litre / kg (&#x20a6;)</label><input type="number" id="modalNew" placeholder="e.g. 920"/></div>
+      <div class="field"><label>Effective Date</label><input type="date" id="modalDate"/></div>
+      <div class="field"><label>Reason for Change</label><input type="text" id="modalReason" placeholder="e.g. NNPC pump price adjustment"/></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn-p" onclick="confirmPrice()" style="flex:1">Confirm Update <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      <button class="btn-ghost" onclick="document.getElementById('modalBg').classList.remove('open')">Cancel</button>
+    </div>
+  </div>
+</div></div></div>
+</div>
+<div class="toast" id="mainToast">
+  <div class="toast-ico" id="toastIco">
+    <svg width="16" height="16" fill="none" stroke="#34D399" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+  </div>
+  <div>
+    <div class="toast-title" id="toastTitle">Saved</div>
+    <div class="toast-msg" id="toastMsg">Record saved successfully.</div>
+  </div>
+</div>
+<script>
+var _user = JSON.parse(sessionStorage.getItem('mso_u') || 'null');
+if (!_user) window.location.href = 'login.html';
+if (_user) {
+  var _initials = (_user.name||'U').split(' ').map(function(n){return n[0]}).join('').toUpperCase().slice(0,2);
+  document.getElementById('sbAvatar').textContent = _initials;
+  document.getElementById('sbName').textContent = _user.name || _user.u;
+  document.getElementById('sbRole').textContent = _user.pick ? 'Owner' : 'Staff';
+}
+function doLogout(){sessionStorage.clear();window.location.href='login.html';}
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sbOverlay').classList.add('on');document.body.style.overflow='hidden';}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbOverlay').classList.remove('on');document.body.style.overflow='';}
+function tick(){
+  var now=new Date();
+  var el=document.getElementById('tbClock');
+  if(el) el.textContent=now.toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  var d=document.getElementById('tbDate');
+  if(d) d.textContent=now.toLocaleDateString('en-NG',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+tick(); setInterval(tick,1000);
+function fmt(n){if(n>=1000000)return '\u20a6'+(n/1000000).toFixed(2)+'M';if(n>=1000)return '\u20a6'+(n/1000).toFixed(0)+'K';return '\u20a6'+Number(n).toLocaleString();}
+function fmtFull(n){return '\u20a6'+Number(n).toLocaleString();}
+function showToast(title,msg,type){
+  var t=document.getElementById('mainToast');
+  if(!t)return;
+  var ico=document.getElementById('toastIco');
+  var colors={ok:'#34D399',err:'#F87171',info:'#60A5FA'};
+  if(ico) ico.style.background=(colors[type]||'#60A5FA')+'22';
+  document.getElementById('toastTitle').textContent=title;
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},3500);
+}
+
+var CUR_PROD=''; var CUR_OLD=0;
+document.getElementById('modalDate').value=new Date().toISOString().split('T')[0];
+function openUpdate(prod,oldPrice){
+  CUR_PROD=prod; CUR_OLD=oldPrice;
+  document.getElementById('modalTitle').textContent='Update '+prod+' Price';
+  document.getElementById('modalCurrent').textContent='&#x20a6;'+oldPrice.toLocaleString();
+  document.getElementById('modalNew').value='';
+  document.getElementById('modalBg').classList.add('open');
+}
+document.getElementById('modalBg').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+function confirmPrice(){
+  var np=parseFloat(document.getElementById('modalNew').value);
+  if(!np||np<=0){showToast('Error','Enter a valid price.','err');return;}
+  document.getElementById('cp-'+CUR_PROD.toLowerCase()).textContent='&#x20a6;'+np.toLocaleString();
+  var diff=np-CUR_OLD;
+  var row=document.createElement('tr');
+  var u=(JSON.parse(sessionStorage.getItem('mso_u'))||{}).name||'—';
+  row.innerHTML='<td>'+new Date().toISOString().split('T')[0]+'</td>'
+    +'<td><span class="badge badge-blue">'+CUR_PROD+'</span></td>'
+    +'<td class="mono">&#x20a6;'+CUR_OLD.toLocaleString()+'</td>'
+    +'<td class="mono" style="color:#FCD34D">&#x20a6;'+np.toLocaleString()+'</td>'
+    +'<td style="color:'+(diff>=0?'#34D399':'#F87171')+'">'+(diff>=0?'+':'')+diff+'</td>'
+    +'<td>'+u+'</td>';
+  document.getElementById('priceHistory').prepend(row);
+  CUR_OLD=np;
+  document.getElementById('modalBg').classList.remove('open');
+  showToast('Updated',CUR_PROD+' price set to &#x20a6;'+np.toLocaleString(),'ok');
+}
+</script>
+</body></html>

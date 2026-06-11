@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Sign In — MSO Digital Operations (Option 2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+<style>
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
+button,input{font-family:inherit}
+input:focus{outline:none}
+input::placeholder{color:#94a3b8}
+.page{display:grid;grid-template-columns:1.25fr 1fr;height:100vh;overflow:hidden}
+.right{
+  background:#fff;display:flex;align-items:center;
+  justify-content:center;padding:48px 52px;
+  position:relative;overflow-y:auto;
+}
+.right::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,#e2e8f0 0%,#2563eb 50%,#e2e8f0 100%);opacity:.6;
+}
+.form-wrap{width:100%;max-width:340px}
+.f-logo{display:flex;align-items:center;gap:9px;margin-bottom:40px}
+.f-logo-img{width:32px;height:32px;border-radius:8px;object-fit:contain;border:1.5px solid #e2e8f0;padding:3px}
+.f-logo-name{font-size:13px;font-weight:700;color:#0f172a}
+.f-logo-sub{font-size:11px;color:#94a3b8;margin-top:1px}
+.f-h{font-size:26px;font-weight:800;color:#0f172a;letter-spacing:-.05em;margin-bottom:6px}
+.f-sub{font-size:13.5px;color:#64748b;line-height:1.6;margin-bottom:32px}
+.f-err{display:flex;align-items:flex-start;gap:9px;padding:11px 13px;
+  border-radius:10px;background:#fef2f2;border:1px solid #fecaca;margin-bottom:18px}
+.f-err-txt{font-size:12.5px;color:#b91c1c;font-weight:500;line-height:1.45}
+.f-field{margin-bottom:14px}
+.f-lbl{display:flex;justify-content:space-between;align-items:center;
+  font-size:12px;font-weight:600;color:#374151;letter-spacing:.15px;margin-bottom:7px}
+.f-lbl a{font-size:11.5px;font-weight:500;color:#2563eb;text-decoration:none}
+.f-lbl a:hover{color:#1d4ed8}
+.f-wrap{position:relative}
+.f-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  width:15px;height:15px;pointer-events:none;transition:color .2s}
+.f-input{width:100%;height:46px;border-radius:10px;padding:0 14px 0 43px;
+  font-size:14px;font-weight:500;color:#0f172a;background:#f8fafc;
+  border:1.5px solid #e2e8f0;transition:border-color .2s,background .2s,box-shadow .2s}
+.f-input:hover{border-color:#cbd5e1}
+.f-input:focus{background:#fff;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.1)}
+.f-input.err{background:#fef2f2;border-color:#fca5a5}
+.f-eye{position:absolute;right:13px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;padding:5px;color:#94a3b8;transition:color .15s}
+.f-eye:hover{color:#475569}
+.f-btn{
+  width:100%;height:50px;margin-top:6px;border:none;border-radius:11px;
+  cursor:pointer;font-size:15px;font-weight:800;color:#fff;background:#1e40af;
+  box-shadow:0 1px 3px rgba(0,0,0,.12),0 8px 24px rgba(37,99,235,.28);
+  display:flex;align-items:center;justify-content:center;gap:11px;
+  position:relative;overflow:hidden;transition:background .18s,transform .18s,box-shadow .18s;
+}
+.f-btn:hover:not(:disabled){background:#1d4ed8;transform:translateY(-1px);
+  box-shadow:0 1px 3px rgba(0,0,0,.12),0 14px 32px rgba(37,99,235,.36)}
+.f-btn:active:not(:disabled){transform:translateY(0)}
+.f-btn:disabled{opacity:.55;cursor:wait;transform:none}
+.btn-shine{position:absolute;inset:0;
+  background:linear-gradient(155deg,rgba(255,255,255,.12) 0%,transparent 50%);pointer-events:none}
+.btn-arrow{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;font-size:15px;transition:transform .18s}
+.f-btn:hover:not(:disabled) .btn-arrow{transform:translateX(2px)}
+.spinner{width:20px;height:20px;border:2.5px solid rgba(255,255,255,.25);
+  border-top-color:#fff;border-radius:50%;position:absolute;animation:spin .6s linear infinite}
+.f-success{display:flex;align-items:center;gap:8px;margin-top:16px;font-size:13px;font-weight:600;color:#059669}
+.f-foot{display:flex;align-items:center;gap:6px;margin-top:28px}
+.f-foot span{font-size:11.5px;color:#94a3b8}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes slideLeft{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideRight{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:translateX(0)}}
+.sl1{animation:slideLeft .6s .05s both cubic-bezier(.22,1,.36,1)}
+.sl2{animation:slideLeft .6s .12s both cubic-bezier(.22,1,.36,1)}
+.sl3{animation:slideLeft .6s .19s both cubic-bezier(.22,1,.36,1)}
+.sl4{animation:slideLeft .6s .26s both cubic-bezier(.22,1,.36,1)}
+.sr1{animation:slideRight .6s .08s both cubic-bezier(.22,1,.36,1)}
+.sr2{animation:slideRight .6s .15s both cubic-bezier(.22,1,.36,1)}
+.sr3{animation:slideRight .6s .22s both cubic-bezier(.22,1,.36,1)}
+.sr4{animation:slideRight .6s .29s both cubic-bezier(.22,1,.36,1)}
+.sr5{animation:slideRight .6s .36s both cubic-bezier(.22,1,.36,1)}
+@media(max-width:900px){
+  html,body{height:auto;overflow-y:auto}
+  .page{grid-template-columns:1fr;height:auto;min-height:100vh}
+  .left{order:1}
+  .right{padding:32px 20px 40px;order:2;align-items:flex-start}
+  .form-wrap{max-width:100%}
+  .f-logo{margin-bottom:28px}
+  .f-sub{margin-bottom:24px}
+}
+
+
+/* ── OPTION 2: Large photo + floating second card ── */
+.left {
+  background: #0B0F1C;
+  padding: 48px 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Wordmark */
+.wm { display:flex; align-items:center; gap:11px; }
+.wm-logo { width:38px; height:38px; border-radius:10px; object-fit:contain;
+  background:rgba(255,255,255,.07); padding:4px; border:1px solid rgba(255,255,255,.1); }
+.wm-name { font-size:14px; font-weight:700; color:rgba(255,255,255,.88); letter-spacing:-.2px; }
+.wm-sub  { font-size:9px; color:rgba(255,255,255,.3); letter-spacing:1.5px; text-transform:uppercase; margin-top:2px; }
+
+/* Headline */
+.hero-h {
+  font-size: clamp(1.9rem, 2.8vw, 2.9rem);
+  font-weight: 900;
+  line-height: 1.04;
+  letter-spacing: -.055em;
+  color: #fff;
+  margin-bottom: 14px;
+}
+.hero-h .grad {
+  background: linear-gradient(135deg, #93c5fd, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-p {
+  font-size: 14.5px;
+  color: rgba(255,255,255,.44);
+  line-height: 1.72;
+  max-width: 400px;
+}
+
+/* ── Photo stack ── */
+.photo-stack {
+  position: relative;
+  flex: 1;
+  margin: 24px 0 20px;
+  min-height: 0;
+}
+
+/* Large MSO photo */
+.photo-main {
+  position: absolute;
+  inset: 0;
+  bottom: 28px;   /* leave room for floating card to peek out */
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.08);
+}
+.photo-main-bg {
+  position: absolute;
+  inset: -4%;
+  background-image: url('https://images.unsplash.com/photo-1611735341450-74d61e660ad2?w=1200&q=85');
+  background-size: cover;
+  background-position: center;
+  filter: brightness(.4) saturate(.6) contrast(1.1);
+  transition: transform .6s ease;
+}
+.photo-main:hover .photo-main-bg { transform: scale(1.03); }
+
+/* Blue grade overlay */
+.photo-main::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(29,78,216,.18) 0%, transparent 50%, rgba(10,18,50,.45) 100%);
+}
+
+/* MSO label — bottom left of main photo */
+.photo-main-label {
+  position: absolute;
+  bottom: 16px;
+  left: 18px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pml-logo {
+  width: 22px; height: 22px;
+  border-radius: 6px; object-fit: contain;
+  background: rgba(37,99,235,.35); padding: 3px;
+}
+.pml-name {
+  font-size: 12px; font-weight: 700;
+  color: rgba(255,255,255,.8);
+}
+.pml-dot {
+  position: absolute;
+  top: 14px; right: 16px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #60a5fa;
+  box-shadow: 0 0 7px rgba(96,165,250,.9);
+  animation: blink 2.2s ease-in-out infinite;
+}
+
+/* ── Floating MRS accent card — offset bottom-right ── */
+.photo-float {
+  position: absolute;
+  bottom: 0;
+  right: -12px;     /* peeks out from the right edge slightly */
+  width: 52%;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 3px solid #0B0F1C;   /* matches left panel bg = clean cutout */
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.08),
+    -12px -12px 40px rgba(0,0,0,.55),
+    -4px -4px 16px rgba(0,0,0,.35);
+  z-index: 2;
+}
+.photo-float-inner {
+  position: relative;
+  height: 110px;
+}
+.photo-float-bg {
+  position: absolute;
+  inset: -5%;
+  background-image: url('https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=800&q=85');
+  background-size: cover;
+  background-position: center;
+  filter: brightness(.4) saturate(.55) contrast(1.1);
+  transition: transform .6s ease;
+}
+.photo-float:hover .photo-float-bg { transform: scale(1.04); }
+.photo-float::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(180,83,9,.2) 0%, transparent 50%, rgba(60,20,4,.4) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+.photo-float-label {
+  position: absolute;
+  bottom: 12px; left: 14px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.pfl-logo {
+  width: 20px; height: 20px;
+  border-radius: 5px; object-fit: contain;
+  background: rgba(180,83,9,.35); padding: 3px;
+}
+.pfl-name { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.8); }
+.photo-float-dot {
+  position: absolute;
+  top: 11px; right: 13px;
+  z-index: 2;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #fbbf24;
+  box-shadow: 0 0 7px rgba(251,191,36,.9);
+  animation: blink 2.2s .6s ease-in-out infinite;
+}
+
+/* Trust row */
+.trust { display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+.trust-item { display:flex; align-items:center; gap:6px; }
+.trust-txt { font-size:10px; color:rgba(255,255,255,.22); letter-spacing:.3px; }
+
+/* Mobile */
+@media(max-width:900px) {
+  .left { padding:28px 20px; min-height:55vh; }
+  .hero-h { font-size:1.9rem; }
+  .photo-stack { margin:18px 0 16px; }
+  .photo-float { right:-8px; width:48%; }
+}
+</style>
+</head>
+<body>
+<div class="page" x-data="app()" x-init="boot()">
+
+  <div class="left">
+
+    <div class="wm sl1">
+      <img src="images/msolimpid.png" class="wm-logo" alt="MSO"/>
+      <div>
+        <div class="wm-name">MSO Digital Operations</div>
+        <div class="wm-sub">by Idowu Egba · Lagos</div>
+      </div>
+    </div>
+
+    <div class="sl2">
+      <h1 class="hero-h">
+        Every litre.<br/>
+        Every naira.<br/>
+        <span class="grad">Accounted.</span>
+      </h1>
+      <p class="hero-p">
+        Complete digital operations for MSO Limpid Co. Ltd
+        and M&amp;M Oil &amp; Gas — remote visibility from anywhere.
+      </p>
+    </div>
+
+    <!-- Photo stack -->
+    <div class="photo-stack sl3">
+
+      <!-- MSO — large main photo -->
+      <div class="photo-main">
+        <div class="photo-main-bg"></div>
+        <div class="pml-dot"></div>
+        <div class="photo-main-label">
+          <img src="images/msolimpid.png" class="pml-logo" alt="MSO"/>
+          <span class="pml-name">MSO Limpid Co. Ltd</span>
+        </div>
+      </div>
+
+      <!-- MRS — floating accent card -->
+      <div class="photo-float">
+        <div class="photo-float-inner">
+          <div class="photo-float-bg"></div>
+          <div class="photo-float-dot"></div>
+          <div class="photo-float-label">
+            <img src="images/msolimpid.png" class="pfl-logo" alt="MRS"/>
+            <span class="pfl-name">M&amp;M Oil &amp; Gas</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="trust sl4">
+      <div class="trust-item">
+        <svg width="11" height="11" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span class="trust-txt">Secured · Google Apps Script</span>
+      </div>
+      <div class="trust-item">
+        <svg width="11" height="11" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span class="trust-txt">20-year data storage</span>
+      </div>
+      <div class="trust-item">
+        <svg width="11" height="11" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2" viewBox="0 0 24 24">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+        <span class="trust-txt">v1.0 · Phase 1 of 4</span>
+      </div>
+    </div>
+
+  </div>
+
+  
+  <div class="right">
+    <div class="form-wrap">
+      <div class="f-logo sr1">
+        <img src="images/msolimpid.png" class="f-logo-img" alt="MSO"/>
+        <div>
+          <div class="f-logo-name">MSO Digital Operations</div>
+          <div class="f-logo-sub">Staff &amp; Owner Portal</div>
+        </div>
+      </div>
+      <div class="sr2">
+        <h2 class="f-h">Sign in</h2>
+        <p class="f-sub">Enter your credentials — we route you to the right dashboard automatically.</p>
+      </div>
+      <div x-show="err"
+           x-transition:enter="transition ease-out duration-200"
+           x-transition:enter-start="opacity-0 -translate-y-1"
+           x-transition:enter-end="opacity-100 translate-y-0"
+           class="f-err">
+        <svg width="14" height="14" fill="none" stroke="#ef4444" stroke-width="2"
+             viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span class="f-err-txt" x-text="err"></span>
+      </div>
+      <div class="f-field sr3">
+        <div class="f-lbl"><span>Username</span></div>
+        <div class="f-wrap">
+          <svg class="f-icon" :style="foc==='u'?'color:#2563eb':'color:#94a3b8'"
+               fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+          </svg>
+          <input x-model="uname" @focus="foc='u';err=''" @blur="foc=''"
+                 @keydown.enter="go()" :class="err?'f-input err':'f-input'"
+                 type="text" placeholder="Your username" autocomplete="username"/>
+        </div>
+      </div>
+      <div class="f-field sr3">
+        <div class="f-lbl">
+          <span>Password</span>
+          <a href="#" @click.prevent>Forgot password?</a>
+        </div>
+        <div class="f-wrap">
+          <svg class="f-icon" :style="foc==='p'?'color:#2563eb':'color:#94a3b8'"
+               fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <input x-model="pw" @focus="foc='p';err=''" @blur="foc=''"
+                 @keydown.enter="go()" :class="err?'f-input err':'f-input'"
+                 :type="showpw?'text':'password'" placeholder="Your password"
+                 autocomplete="current-password"/>
+          <button class="f-eye" type="button" @click="showpw=!showpw" tabindex="-1">
+            <template x-if="!showpw">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </template>
+            <template x-if="showpw">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+                <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </template>
+          </button>
+        </div>
+      </div>
+      <button class="f-btn sr4" type="button" @click="go()"
+              @mouseenter="hov=true" @mouseleave="hov=false" :disabled="loading">
+        <div class="btn-shine"></div>
+        <div x-show="loading" class="spinner"></div>
+        <template x-if="!loading"><span>Continue</span></template>
+        <template x-if="!loading">
+          <div class="btn-arrow" :style="hov?'transform:translateX(2px)':''">→</div>
+        </template>
+      </button>
+      <div x-show="ok" x-transition class="f-success">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span x-text="msg"></span>
+      </div>
+      <div class="f-foot sr5">
+        <svg width="12" height="12" fill="none" stroke="#cbd5e1" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>Secured · Google Apps Script · All activity logged</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const DB = {
+  'owner':   {pw:'owner123',name:'Business Owner',has:['mso','mrs'],pick:true},
+  'sup.mso': {pw:'mso2025', name:'MSO Supervisor', has:['mso'],      pick:false},
+  'sup.mrs': {pw:'mrs2025', name:'MRS Supervisor', has:['mrs'],      pick:false},
+  'emeka':   {pw:'pump01',  name:'Emeka Obi',      has:['mrs'],      pick:false},
+  'chidi':   {pw:'pump02',  name:'Chidi Eze',      has:['mso'],      pick:false},
+  'bola':    {pw:'pump03',  name:'Bola Adeyemi',   has:['mrs'],      pick:false},
+  'fatima':  {pw:'pump04',  name:'Fatima Yusuf',   has:['mrs'],      pick:false},
+};
+function app() {
+  return {
+    uname:'', pw:'', showpw:false, foc:'', err:'',
+    loading:false, hov:false, ok:false, msg:'',
+    boot() {
+      try { const s=JSON.parse(sessionStorage.getItem('mso_u')||'null'); if(s) this.route(s); } catch {}
+    },
+    async go() {
+      this.err='';
+      const u=this.uname.trim().toLowerCase(), p=this.pw;
+      if(!u){this.err='Please enter your username.';return;}
+      if(!p){this.err='Please enter your password.';return;}
+      const r=DB[u];
+      if(!r||r.pw!==p){this.err='Incorrect username or password.';return;}
+      this.loading=true;
+      await new Promise(x=>setTimeout(x,900));
+      this.loading=false;
+      sessionStorage.setItem('mso_u', JSON.stringify({u,name:r.name,has:r.has,pick:r.pick,station:r.pick?null:r.has[0]}));
+      sessionStorage.setItem('mso_user', JSON.stringify({username:u,displayName:r.name,role:r.pick?'owner':(r.has[0]==='mso'&&!r.pick?'attendant':'attendant'),station:r.pick?'both':r.has[0]}));
+      this.ok=true;
+      this.msg=r.pick?'Authenticated — opening station selector…':'Authenticated — loading '+r.has[0].toUpperCase()+' dashboard…';
+      setTimeout(()=>this.route(JSON.parse(sessionStorage.getItem('mso_u'))), 1200);
+    },
+    route(s) {
+      if(s.pick) { window.location.href='select.html'; }
+      else { window.location.href='dashboard-'+s.has[0]+'.html'; }
+    }
+  };
+}
+</script>
+
+</body>
+</html>
