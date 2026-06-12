@@ -61,7 +61,7 @@ button{cursor:pointer;font-family:inherit;border:none;background:none}
   line-height:1.06;margin-bottom:18px}
 .sh-w{color:#fff}.sh-d{color:#0F172A}
 .sp{font-size:15.5px;line-height:1.82}
-.sp-w{color:rgba(255,255,255,.5)}.sp-d{color:#475569}
+.sp-w{color:rgba(255,255,255,255)}.sp-d{color:#475569}
 
 /* ticker */
 .ticker-wrap{background:#130656;padding:11px 0;overflow:hidden;white-space:nowrap}
@@ -75,7 +75,7 @@ button{cursor:pointer;font-family:inherit;border:none;background:none}
 #nav{position:fixed;top:0;left:0;right:0;z-index:500;
   height:68px;display:flex;align-items:center;
   padding:0 40px;transition:background .3s,box-shadow .3s}
-#nav.solid{background:rgba(3,1,16,.97);backdrop-filter:blur(24px);
+#nav.solid{background:#130656;backdrop-filter:blur(24px);
   box-shadow:0 1px 0 rgba(255,255,255,.07)}
 .nav-w{display:flex;align-items:center;justify-content:space-between;
   width:100%;max-width:1240px;margin:0 auto}
@@ -172,7 +172,7 @@ button{cursor:pointer;font-family:inherit;border:none;background:none}
 .stt:hover{background:#1186b3;transform:translateY(-2px)!important}
 
 /* ─── FOOTER ─── */
-footer{background:#02010a;padding:64px 0 0}
+footer{background:#07021e;padding:64px 0 0}
 .ft{max-width:1240px;margin:0 auto;padding:0 40px 52px;
   display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:44px;
   border-bottom:1px solid rgba(255,255,255,.08)}
@@ -203,7 +203,7 @@ footer{background:#02010a;padding:64px 0 0}
   margin-top:6px;padding-top:14px;
   border-top:1px solid rgba(255,255,255,.07)}
 .ft-dir-link{color:#4dcff0!important;font-weight:700}
-.ft-info{display:block;font-size:13px;color:rgba(255,255,255,.28);
+.ft-info{display:block;font-size:13px;color:rgba(255,255,255,255);
   margin-bottom:11px;pointer-events:none}
 .ft-bottom{max-width:1240px;margin:0 auto;
   padding:24px 40px;display:flex;align-items:center;
@@ -236,8 +236,8 @@ body{background:#030112;color:#fff}
 .hero{position:relative;min-height:100vh;display:flex;align-items:flex-end;overflow:hidden}
 .hero-bg{position:absolute;inset:0}
 .hero-ov{position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(to right,rgba(3,1,18,.97) 0%,rgba(3,1,18,.75) 52%,rgba(3,1,18,.3) 100%),
-  linear-gradient(to top,rgba(3,1,18,.95) 0%,transparent 55%)}
+  background:linear-gradient(to right,rgba(19,6,86,.96) 0%,rgba(13,4,60,.72) 52%,rgba(6,2,30,.28) 100%),
+  linear-gradient(to top,rgba(19,6,86,.92) 0%,transparent 55%)}
 .hero-gr{position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(ellipse 52% 65% at 8% 55%,rgba(23,157,208,.15),transparent 62%)}
 .hero-body{position:relative;z-index:1;padding:0 40px 96px;max-width:1240px;margin:0 auto;width:100%}
@@ -254,6 +254,15 @@ body{background:#030112;color:#fff}
   background:linear-gradient(135deg,#179DD0,#4dcff0 45%,#b0eeff 85%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .hero-sub{font-size:17px;color:rgba(255,255,255,.52);line-height:1.78;max-width:520px;margin-bottom:40px}
+/* hero slideshow */
+.hero-slide{position:absolute;inset:0;opacity:0;background-size:cover;background-position:center;
+  animation:heroSlide 18s linear infinite}
+.hero-slide:nth-child(1){background-image:url('images/KM1_1031.jpeg');animation-delay:0s}
+.hero-slide:nth-child(2){background-image:url('images/KM1_0982 copy.jpg.jpeg');animation-delay:6s}
+.hero-slide:nth-child(3){background-image:url('images/KM1_1000 copy.jpg.jpeg');animation-delay:12s}
+@keyframes heroSlide{
+  0%{opacity:0}5%{opacity:1}28%{opacity:1}33%{opacity:0}100%{opacity:0}
+}
 .hero-btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:32px}
 .hero-creds{display:flex;flex-wrap:wrap}
 .hc{font-size:11px;font-weight:600;color:rgba(255,255,255,.35);
@@ -279,7 +288,7 @@ body{background:#030112;color:#fff}
 /* partners */
 .partners{background:#050115;padding:60px 0;border-top:1px solid rgba(255,255,255,.06)}
 .partners-label{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
-  color:rgba(255,255,255,.28);text-align:center;margin-bottom:32px}
+  color:rgba(255,255,255,255);text-align:center;margin-bottom:32px}
 .pgrid2{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
 .partner{height:76px;border-radius:10px;background:rgba(255,255,255,.04);
   border:1px solid rgba(255,255,255,.07);
@@ -344,15 +353,17 @@ body{background:#030112;color:#fff}
   letter-spacing:-.045em;line-height:1.08;margin-bottom:14px}
 @media(max-width:1024px){.pgrid{grid-template-columns:1fr 1fr}.why-grid{grid-template-columns:1fr 1fr}.pgrid2{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:768px){.abt-grid{grid-template-columns:1fr}.abt-photos{height:300px}.svcs-grid{grid-template-columns:1fr}.cta-body{flex-direction:column;text-align:center}.why-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:480px){.why-grid{grid-template-columns:1fr}.pgrid2{grid-template-columns:repeat(2,1fr)}.pgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.why-grid{grid-template-columns:1fr}.pgrid2{grid-template-columns:repeat(2,1fr)}.pgrid{grid-template-columns:1fr 1fr}
+  .hero-btns{flex-direction:column;align-items:stretch}
+  .hero-btns .btn-p,.hero-btns .btn-g{width:100%;justify-content:center}
+  .hero-body{padding:0 20px 80px}}
 
 </style>
 </head>
 <body><nav id="nav"><div class="nav-w">
   <a href="index.html" class="nav-brand">
-   <a href="index.html" class="nav-brand">
-  <img src="images/msolimpid.png" alt="MSO Limpid"/>
-</a>
+    <img src="images/msolimpid.png" alt="MSO Limpid"/>
+  </a>
   <ul class="nav-links"><li><a href="index.html" class=active>Home</a></li><li><a href="services.html">Fuel & Products</a></li><li><a href="carwash.html">Car Wash</a></li><li><a href="autoservice.html">Auto Service</a></li><li><a href="about.html">About</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="contact.html">Contact</a></li></ul>
   <div class="nav-right">
     <a href="login.html" class="nav-login">Staff Login</a>
@@ -377,17 +388,21 @@ body{background:#030112;color:#fff}
   </div>
 </div>
 <section class="hero">
-  <div class="hero-bg"><img src="images/KM1_1031.jpeg" alt="MSO Limpid Station" loading="lazy" style="width:100%;height:100%;object-fit:cover"/></div>
+  <div class="hero-bg">
+    <div class="hero-slide"></div>
+    <div class="hero-slide"></div>
+    <div class="hero-slide"></div>
+  </div>
   <div class="hero-ov"></div><div class="hero-gr"></div>
   <div class="hero-body">
     <div class="hero-pill r">
       <div class="hero-pill-dot">
         <svg width="10" height="10" fill="none" stroke="#4dcff0" stroke-width="2.5" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
       </div>
-      <span>Oil &amp; Gas Distribution &middot; Wholesale &amp; Retail &middot; Lagos</span>
+      <span>Oil &amp; Gas Distributor</span>
     </div>
     <h1 class="hero-h r r2">Fuelling Lagos.<br/><em>Since 2012.</em></h1>
-    <p class="hero-sub r r3">MSO Limpid Co. Ltd is an authorised Mobil service station distributing petroleum products at wholesale and retail level in Lagos. Quality fuel. Professional car wash. Expert auto service.</p>
+    <p class="hero-sub r r3">MSO Limpid Co. Ltd is an authorised Mobil service station distributing petroleum products at wholesale and retail level in Lagos.</p>
     <div class="hero-btns r r4">
       <a href="services.html" class="btn-p">Our Products &amp; Services <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
       <a href="about.html" class="btn-g">About Us</a>
@@ -395,7 +410,6 @@ body{background:#030112;color:#fff}
     <div class="hero-creds r r5">
       <span class="hc">Authorised Mobil Dealer</span>
       <span class="hc">DPR Licensed</span>
-      <span class="hc">CAC Registered 2016</span>
       <span class="hc">Est. 2012</span>
       <span class="hc">Open 24/7</span>
     </div>
@@ -454,12 +468,15 @@ body{background:#030112;color:#fff}
   <div class="W">
     <div class="partners-label r">Brand Partners &amp; Affiliations</div>
     <div class="pgrid2 r r2">
-      <div class="partner"><img src="data:image/jpeg;base64,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" alt="Mobil" style="max-height:34px;max-width:100%;object-fit:contain;opacity:.7"/></div>
-      <div class="partner"><div class="partner-text">NNPC<br/><span style="font-size:9.5px;color:rgba(255,255,255,.25)">Add logo</span></div></div>
-      <div class="partner"><div class="partner-text">DPR / NMDPRA<br/><span style="font-size:9.5px;color:rgba(255,255,255,.25)">Add logo</span></div></div>
-      <div class="partner"><div class="partner-text">CAC<br/><span style="font-size:9.5px;color:rgba(255,255,255,.25)">Add logo</span></div></div>
-      <div class="partner"><div class="partner-text">Partner 5<br/><span style="font-size:9.5px;color:rgba(255,255,255,.25)">Add logo</span></div></div>
-      <div class="partner"><div class="partner-text">Partner 6<br/><span style="font-size:9.5px;color:rgba(255,255,255,.25)">Add logo</span></div></div>
+           <div class="partner"><img src="https://cdn.freebiesupply.com/images/large/2x/mobil-logo-png-transparent.png" alt="Mobil" style="max-height:34px;max-width:70%;object-fit:contain;opacity:.7"/></div>
+
+      <div class="partner"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Nigerian_National_Petroleum_Company_logo.svg/1280px-Nigerian_National_Petroleum_Company_logo.svg.png" alt="Mobil" style="max-height:34px;max-width:100%;object-fit:contain;opacity:.7"/></div>
+           <div class="partner"><img src="https://media.licdn.com/dms/image/v2/C4E0BAQE-xHUbm2EM4g/company-logo_200_200/company-logo_200_200/0/1635535578686?e=1782950400&v=beta&t=pJwKjA_Fl9Jvd3gVgzDGCTNOnN3-ASts6AxTvNWyZ0Q" alt="NMDPRA" style="max-height:34px;max-width:100%;object-fit:contain;opacity:.7"/></div>
+            <div class="partner"><img src="https://refinery.dangote.com/wp-content/uploads/elementor/thumbs/Dangote-Petroleum-Refinery-white-q3xlufl1y6e79vecpzhy8m150h322b0jr11zpa4x8s.png" alt="DANGOTE FUEL" style="max-height:34px;max-width:100%;object-fit:contain;opacity:.7"/></div>
+            <div class="partner"><img src="https://moniepoint.com/logo-mfb-white.png" alt="moniepoint " style="max-height:34px;max-width:100%;object-fit:contain;opacity:.7"/></div>
+            <div class="partner"><img src="https://www.bungelnigltd.com/images/mrs-logo.png" alt="MRS " style="max-height:34px;max-width:100%;object-fit:contain;opacity:.7"/></div>
+
+    
     </div>
   </div>
 </section>
@@ -473,9 +490,8 @@ body{background:#030112;color:#fff}
     <div class="r r2">
       <div class="ey ey-b">About MSO Limpid</div>
       <h2 class="sh sh-w">Oil &amp; gas distributor at wholesale and retail level.</h2>
-      <p class="sp sp-w" style="margin-bottom:16px">MSO Limpid Co. Ltd started operations in 2012 and was fully registered with the Corporate Affairs Commission (CAC) in 2016. We are an authorised Mobil service station distributing petroleum products at both wholesale and retail level in Lagos.</p>
+      <p class="sp sp-w" style="margin-bottom:16px">We are an authorised Mobil service station distributing petroleum products at both wholesale and retail level in Lagos.</p>
       <p class="sp sp-w" style="margin-bottom:24px">We distribute PMS, AGO and LPG alongside genuine Mobil engine oils. We also operate a professional car wash and auto service bay.</p>
-      <div class="abt-badge"><img src="data:image/jpeg;base64,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" alt="Mobil"/><span>Authorised Mobil Dealer &middot; CAC Registered 2016 &middot; Est. 2012</span></div>
       <a href="about.html" class="btn-p">Read Our Full Story <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     </div>
   </div>
@@ -484,12 +500,12 @@ body{background:#030112;color:#fff}
 <section class="svcs">
   <div class="W">
     <div class="r"><div class="ey ey-b">What We Offer</div>
-      <h2 class="sh sh-w">Everything your vehicle needs.<br/>One address.</h2>
-      <p class="sp sp-w" style="max-width:560px">Wholesale and retail fuel distributor. Professional car wash. Expert auto service. All under one Mobil-branded canopy.</p>
+      <h2 class="sh sh-w">Premium Fuel. <br>Trusted Service.</h2>
+      <p class="sp sp-w" style="max-width:560px">DPR-licensed. Mobil-authorised. Calibrated pumps that deliver every litre you pay for plus lubricants, cooking gas, car wash and auto services, around the clock.</p>
     </div>
     <div class="svcs-grid">
       <div class="sfeat r">
-        <div class="sfeat-ph" style="height:460px"><img src="https://images.unsplash.com/photo-1615727553023-b8aba1c9b19d?w=900&q=80" alt="Fuel pumps" loading="lazy" style="width:100%;height:100%;object-fit:cover"/></div>
+        <div class="sfeat-ph" style="height:460px"><img src="images/KM1_1267 copy.jpg.jpeg" alt="Fuel pumps" loading="lazy" style="width:100%;height:100%;object-fit:cover"/></div>
         <div class="sfeat-ov"></div>
         <div class="sfeat-tag" style="background:rgba(19,6,86,.55);color:#4dcff0;border:1px solid rgba(23,157,208,.35)">Fuel Distribution</div>
         <div class="sfeat-body">
@@ -500,7 +516,7 @@ body{background:#030112;color:#fff}
       </div>
       <div class="svcs-col">
         <div class="sfeat r r2">
-          <div class="sfeat-ph" style="height:220px"><img src="https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?w=900&q=80" alt="Car Wash" loading="lazy" style="width:100%;height:100%;object-fit:cover"/></div>
+          <div class="sfeat-ph" style="height:220px"><img src="images/KM1_1060 copy.jpg.jpeg" alt="Car Wash" loading="lazy" style="width:100%;height:100%;object-fit:cover"/></div>
           <div class="sfeat-ov"></div>
           <div class="sfeat-tag" style="background:rgba(19,6,86,.55);color:#4dcff0;border:1px solid rgba(23,157,208,.35)">Car Wash</div>
           <div class="sfeat-body">
@@ -510,7 +526,7 @@ body{background:#030112;color:#fff}
           </div>
         </div>
         <div class="sfeat r r3">
-          <div class="sfeat-ph" style="height:220px"><img src="https://images.unsplash.com/photo-1487754180451-c456f719a1fc?w=900&q=80" alt="Auto Service" loading="lazy" style="width:100%;height:100%;object-fit:cover"/></div>
+          <div class="sfeat-ph" style="height:220px"><img src="images/KM1_1296 copy.jpg.jpeg" alt="Auto Service" loading="lazy" style="width:100%;height:100%;object-fit:cover"/></div>
           <div class="sfeat-ov"></div>
           <div class="sfeat-tag" style="background:rgba(19,6,86,.55);color:#4dcff0;border:1px solid rgba(23,157,208,.35)">Auto Service</div>
           <div class="sfeat-body">
@@ -557,7 +573,7 @@ body{background:#030112;color:#fff}
 </section>
 
 <section class="cta-s">
-  <div class="cta-bg"><img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1400&q=80" alt="MSO Limpid Night" loading="lazy" style="width:100%;height:100%;object-fit:cover"/></div>
+  <div class="cta-bg"><img src="images/KM1_1221 copy.jpg.jpeg" alt="MSO Limpid Night" loading="lazy" style="width:100%;height:100%;object-fit:cover"/></div>
   <div class="cta-ov"></div><div class="cta-glow"></div>
   <div class="W cta-body">
     <div class="r">
@@ -574,9 +590,8 @@ body{background:#030112;color:#fff}
 <footer>
   <div class="ft">
     <div class="ft-brand">
-      <div class="ft-logo"><img src="data:image/jpeg;base64,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" alt="MSO Limpid"/><div><div class="ft-co">MSO Limpid Co. Ltd</div><div class="ft-sub">Authorised Mobil Dealer</div></div></div>
-      <p class="ft-desc">Oil &amp; gas distribution at wholesale and retail level. Authorised Mobil dealer. Car wash &amp; auto service. Lagos, Nigeria. Est.&nbsp;2012, CAC registered&nbsp;2016.</p>
-      <div class="ft-mobil"><img src="data:image/jpeg;base64,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" alt="Mobil"/><span>Authorised Mobil Dealer &middot; CAC Registered 2016</span></div>
+      <div class="ft-logo"><img src="images/msolimpid.png" alt="MSO Limpid"/><div><div class="ft-co">MSO Limpid Co. Ltd</div><div class="ft-sub">Authorised Mobil Dealer</div></div></div>
+      <p class="ft-desc">Oil &amp; gas distribution at wholesale and retail level.</p>
       <a href="login.html" class="ft-staff-login">Staff &amp; Operations Login &rarr;</a>
     </div>
     <div class="ft-col"><h4>Fuel Products</h4>
@@ -606,10 +621,13 @@ body{background:#030112;color:#fff}
     </div>
   </div>
   <div class="ft-bottom">
-    <p>&copy; 2025 MSO Limpid Co. Ltd. All rights reserved. Proprietary of Idowu Egba. CAC Registered 2016.</p>
+    <p>&copy; <span id="yr"></span> MSO Limpid Co. Ltd. All rights reserved. Proprietary of Idowu Egba.</p>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+</script>
     <div class="ft-tags">
       <span>Authorised Mobil Dealer</span>
-      <span>CAC Registered 2016</span>
       <span>DPR Licensed</span>
       <span>Est. 2012 &middot; Lagos</span>
     </div>

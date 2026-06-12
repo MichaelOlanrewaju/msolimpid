@@ -27,7 +27,7 @@ input,select,textarea{font-family:inherit}
 .sb-section{font-size:9.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
   color:rgba(255,255,255,.25);padding:13px 10px 6px}
 .sb-lnk{display:flex;align-items:center;padding:9px 12px;border-radius:8px;
-  font-size:13px;font-weight:500;color:rgba(255,255,255,.5);
+  font-size:13px;font-weight:500;color:rgba(255,255,255,255);
   transition:all .15s;margin-bottom:2px}
 .sb-lnk:hover{background:rgba(255,255,255,.05);color:#fff}
 .sb-active{background:rgba(29,78,216,.15);color:#93C5FD;font-weight:700;border:1px solid rgba(29,78,216,.25)}
@@ -84,7 +84,7 @@ input,select,textarea{font-family:inherit}
 .form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .form-full{grid-column:1/-1}
 .field{display:flex;flex-direction:column;gap:6px}
-.field label{font-size:11.5px;font-weight:600;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.8px}
+.field label{font-size:11.5px;font-weight:600;color:rgba(255,255,255,255);text-transform:uppercase;letter-spacing:.8px}
 .field input,.field select,.field textarea{
   background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
   border-radius:9px;padding:10px 13px;font-size:13.5px;color:#fff;
@@ -142,7 +142,7 @@ input,select,textarea{font-family:inherit}
 .toast-ico{width:32px;height:32px;border-radius:8px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center}
 .toast-title{font-size:13px;font-weight:700;color:#fff}
-.toast-msg{font-size:12px;color:rgba(255,255,255,.5);margin-top:2px}
+.toast-msg{font-size:12px;color:rgba(255,255,255,255);margin-top:2px}
 
 /* RESPONSIVE */
 @media(max-width:1024px){
@@ -205,7 +205,7 @@ input,select,textarea{font-family:inherit}
               <option value="">Select pump...</option><option value="P1">P1 — PMS</option><option value="P2">P2 — PMS</option><option value="P3">P3 — PMS</option><option value="AP1">AP1 — AGO</option>
             </select>
           </div>
-          <div class="field"><label>Product</label><input type="text" id="sProduct" readonly style="background:rgba(255,255,255,.03);color:rgba(255,255,255,.5)"/></div>
+          <div class="field"><label>Product</label><input type="text" id="sProduct" readonly style="background:rgba(255,255,255,.03);color:rgba(255,255,255,255)"/></div>
           <div class="field"><label>Opening Metre (L)</label><input type="number" id="sOpen" oninput="calcLitres()" placeholder="e.g. 45000"/></div>
           <div class="field"><label>Closing Metre (L)</label><input type="number" id="sClose" oninput="calcLitres()" placeholder="e.g. 45040"/></div>
           <div class="field"><label>Litres Dispensed</label><div class="field-calc" id="sLitres">0.00 L</div></div>
