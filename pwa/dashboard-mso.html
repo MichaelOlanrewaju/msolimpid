@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#130656"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>MSO Limpid — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+<style>
+/* ─── TOKENS ───────────────────────────────────────── */
+:root{
+  --c:#179DD0;--cd:#1188B5;--cb:#EAF6FC;
+  --n:#130656;--nb:#EEF0FB;
+  --page:#F0F4F8;--white:#FFFFFF;
+  --border:#E2E8F0;--div:#F1F5F9;
+  --ink:#0F172A;--ink2:#334155;--ink3:#64748B;--ink4:#94A3B8;
+  --g:#16A34A;--gb:#F0FDF4;--gbr:#BBF7D0;
+  --a:#B45309;--ab:#FFFBEB;--abr:#FDE68A;
+  --r:#DC2626;--rb:#FEF2F2;--rbr:#FECACA;
+  --p:#6D28D9;--pb:#F5F3FF;--pbr:#DDD6FE;
+  --sb-w:256px;
+  --tb-h:60px;
+  --bn-h:64px; /* bottom nav height */
+  --sh:0 1px 3px rgba(15,23,42,.06),0 4px 14px rgba(15,23,42,.05);
+  --sh2:0 4px 16px rgba(15,23,42,.1),0 1px 4px rgba(15,23,42,.06);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px;-webkit-text-size-adjust:100%}
+body{
+  font-family:'Inter',sans-serif;background:var(--page);
+  color:var(--ink);-webkit-font-smoothing:antialiased;
+  min-height:100vh;overflow-x:hidden;
+}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:inherit;border:none;background:none}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* ─── LAYOUT ───────────────────────────────────────── */
+.app{display:flex;min-height:100vh}
+.main{
+  flex:1;display:flex;flex-direction:column;
+  min-width:0;margin-left:var(--sb-w);
+  transition:margin-left .25s ease;
+}
+
+/* ─── SIDEBAR (desktop) ────────────────────────────── */
+.sidebar{
+  width:var(--sb-w);position:fixed;top:0;left:0;bottom:0;
+  background:var(--n);display:flex;flex-direction:column;
+  z-index:500;box-shadow:4px 0 20px rgba(19,6,86,.18);
+  transition:transform .25s cubic-bezier(.4,0,.2,1);overflow:hidden;
+}
+.sb-brand{
+  padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07);
+  display:flex;align-items:center;gap:11px;flex-shrink:0;
+}
+.sb-logobox{
+  width:38px;height:38px;border-radius:10px;background:#fff;
+  padding:4px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.2);overflow:hidden;
+}
+.sb-logobox img{width:100%;display:block}
+.sb-bname{font-size:13.5px;font-weight:800;color:#fff;line-height:1.2}
+.sb-bsub{font-size:9px;color:rgba(255,255,255,.38);letter-spacing:.3px;margin-top:2px}
+.sb-station{
+  margin:10px 13px 5px;padding:9px 12px;
+  background:rgba(23,157,208,.12);border:1px solid rgba(23,157,208,.25);
+  border-radius:10px;display:flex;align-items:center;gap:9px;flex-shrink:0;
+}
+.live-dot{
+  width:8px;height:8px;border-radius:50%;background:#4ADE80;
+  box-shadow:0 0 0 3px rgba(74,222,128,.2);flex-shrink:0;
+  animation:lp 2s ease-in-out infinite;
+}
+@keyframes lp{0%,100%{box-shadow:0 0 0 3px rgba(74,222,128,.2)}50%{box-shadow:0 0 0 6px rgba(74,222,128,.06)}}
+.sb-sname{font-size:11.5px;font-weight:700;color:var(--c)}
+.sb-ssub{font-size:9px;color:rgba(255,255,255,.32);margin-top:1px}
+.sb-nav{flex:1;overflow-y:auto;padding:5px 9px 10px;
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.08) transparent}
+.sb-nav::-webkit-scrollbar{width:3px}
+.sb-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+.sb-sec{font-size:8.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(255,255,255,.2);padding:12px 10px 4px;display:block}
+.sb-lnk{
+  display:flex;align-items:center;gap:9px;padding:8.5px 11px;
+  border-radius:8px;font-size:12.5px;font-weight:500;
+  color:rgba(255,255,255,.48);transition:all .13s;margin-bottom:1px;
+  position:relative;cursor:pointer;
+}
+.sb-lnk i{font-size:15px;width:17px;flex-shrink:0;opacity:.6;transition:opacity .13s}
+.sb-lnk:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9)}
+.sb-lnk:hover i{opacity:1}
+.sb-lnk.on{background:rgba(23,157,208,.15);color:#fff;font-weight:700;
+  border:1px solid rgba(23,157,208,.26)}
+.sb-lnk.on i{opacity:1}
+.sb-lnk.on::before{content:'';position:absolute;left:0;top:22%;bottom:22%;
+  width:3px;border-radius:0 2px 2px 0;background:var(--c)}
+.sb-foot{padding:11px 13px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0}
+.sb-user{display:flex;align-items:center;gap:9px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);
+  border-radius:10px;padding:9px 11px;margin-bottom:8px}
+.sb-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--cd),var(--c));
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;color:#fff}
+.sb-un{font-size:12px;font-weight:700;color:#fff}
+.sb-ur{font-size:9.5px;color:rgba(255,255,255,.38);margin-top:1px}
+.sb-ubadge{display:inline-block;font-size:8px;font-weight:700;
+  border-radius:99px;padding:2px 8px;margin-top:3px;text-transform:capitalize}
+.btn-logout{width:100%;padding:8px;border-radius:8px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.48);font-size:12px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:7px;transition:all .14s}
+.btn-logout:hover{background:rgba(220,38,38,.14);color:#FCA5A5;border-color:rgba(220,38,38,.28)}
+
+/* Sidebar drawer overlay */
+#sbOverlay{display:none;position:fixed;inset:0;z-index:499;background:rgba(0,0,0,.55)}
+#sbOverlay.on{display:block}
+
+/* ─── TOPBAR ───────────────────────────────────────── */
+.topbar{
+  height:var(--tb-h);background:var(--white);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;position:sticky;top:0;z-index:400;
+  box-shadow:0 1px 3px rgba(0,0,0,.05);flex-shrink:0;
+}
+.tb-left{display:flex;align-items:center;gap:12px}
+.tb-hamburger{
+  display:none;width:38px;height:38px;border-radius:9px;
+  align-items:center;justify-content:center;font-size:20px;
+  background:var(--page);border:1px solid var(--border);color:var(--n);
+  transition:all .13s;
+}
+.tb-hamburger:hover{background:var(--cb);border-color:var(--c)}
+.tb-title{font-size:17px;font-weight:800;color:var(--n);letter-spacing:-.03em;line-height:1}
+.tb-sub{font-size:10.5px;color:var(--ink4);margin-top:2px}
+.tb-right{display:flex;align-items:center;gap:8px}
+.tb-chip{display:inline-flex;align-items:center;gap:6px;border-radius:99px;padding:5px 12px;font-size:11px;font-weight:700}
+.tc-stn{background:var(--nb);color:var(--n);border:1px solid rgba(19,6,86,.12)}
+.tc-live{background:var(--gb);color:var(--g);border:1px solid var(--gbr)}
+.tc-live .ld{width:7px;height:7px;border-radius:50%;background:var(--g);animation:lp 2s infinite}
+.tc-clk{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;
+  color:var(--ink2);background:var(--page);border:1px solid var(--border);border-radius:7px;padding:5px 11px}
+
+/* ─── PAGE BODY ────────────────────────────────────── */
+.page-body{padding:20px;flex:1}
+
+/* ─── NOTICE BANNER ────────────────────────────────── */
+.notice{display:none;align-items:center;gap:9px;padding:11px 15px;
+  background:var(--cb);border:1.5px solid rgba(23,157,208,.28);
+  border-radius:10px;margin-bottom:18px;font-size:12.5px;font-weight:500;color:#0B5874}
+
+/* ─── KPI CARDS ────────────────────────────────────── */
+.kpi{background:var(--white);border-radius:14px;padding:17px;
+  border:1px solid var(--border);box-shadow:var(--sh);
+  position:relative;overflow:hidden;transition:all .2s;height:100%}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0}
+.kc::before{background:linear-gradient(90deg,var(--cd),var(--c))}
+.kg::before{background:linear-gradient(90deg,#059669,#34D399)}
+.ka::before{background:linear-gradient(90deg,#92400E,#F59E0B)}
+.kn::before{background:linear-gradient(90deg,var(--n),var(--cd))}
+.kr::before{background:linear-gradient(90deg,#991B1B,#F87171)}
+.kpi-hero{background:var(--n);border-color:var(--n)}
+.kpi-hero .kpi-lbl{color:rgba(255,255,255,.45)}
+.kpi-hero .kpi-val{color:#fff;font-size:24px}
+.kpi-hero .kpi-ico-wrap{background:rgba(23,157,208,.18)}
+.kpi-ico-wrap{width:38px;height:38px;border-radius:10px;margin-bottom:13px;
+  display:flex;align-items:center;justify-content:center;font-size:18px}
+.kpi-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+  color:var(--ink4);margin-bottom:6px}
+.kpi-val{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;
+  color:var(--ink);line-height:1;margin-bottom:8px;letter-spacing:-.02em}
+.kpi-sub{font-size:11px;color:var(--ink3);display:flex;align-items:center;gap:5px}
+.tup{background:var(--gb);color:var(--g);font-size:10px;font-weight:700;border-radius:99px;padding:2px 7px}
+.tdn{background:var(--rb);color:var(--r);font-size:10px;font-weight:700;border-radius:99px;padding:2px 7px}
+.tfl{background:var(--div);color:var(--ink3);font-size:10px;font-weight:700;border-radius:99px;padding:2px 7px}
+
+/* ─── SECTION CARD ─────────────────────────────────── */
+.card{background:var(--white);border-radius:14px;border:1px solid var(--border);
+  box-shadow:var(--sh);overflow:hidden}
+.card-h{display:flex;align-items:flex-start;justify-content:space-between;
+  padding:14px 18px;border-bottom:1px solid var(--div)}
+.card-title{font-size:13.5px;font-weight:700;color:var(--ink)}
+.card-sub{font-size:10.5px;color:var(--ink4);margin-top:3px}
+.card-body{padding:18px}
+
+/* ─── TABLE ────────────────────────────────────────── */
+.dt{width:100%;border-collapse:collapse}
+.dt thead th{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+  color:var(--ink4);padding:9px 15px;background:var(--page);
+  border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+.dt tbody td{font-size:12.5px;padding:10px 15px;border-bottom:1px solid var(--div);
+  color:var(--ink2);vertical-align:middle}
+.dt tbody tr:last-child td{border:none}
+.dt tbody tr:hover td{background:#FAFBFC}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* ─── BADGES ───────────────────────────────────────── */
+.bdg{display:inline-flex;align-items:center;border-radius:99px;
+  padding:3px 9px;font-size:10.5px;font-weight:700;white-space:nowrap}
+.bc{background:var(--cb);color:var(--cd);border:1px solid rgba(23,157,208,.22)}
+.bn{background:var(--nb);color:var(--n);border:1px solid rgba(19,6,86,.14)}
+.bg{background:var(--gb);color:var(--g);border:1px solid var(--gbr)}
+.ba{background:var(--ab);color:var(--a);border:1px solid var(--abr)}
+.br{background:var(--rb);color:var(--r);border:1px solid var(--rbr)}
+.bgy{background:var(--page);color:var(--ink3);border:1px solid var(--border)}
+.bp{background:var(--pb);color:var(--p);border:1px solid var(--pbr)}
+
+/* ─── TANK GAUGE ───────────────────────────────────── */
+.tank-row{display:flex;align-items:center;gap:12px}
+.tank-meta{width:60px;flex-shrink:0}
+.tank-id{font-size:12px;font-weight:800;color:var(--ink)}
+.tank-pump{font-size:9.5px;color:var(--ink4);margin-top:1px}
+.tank-track{flex:1;height:10px;background:var(--page);border-radius:5px;
+  overflow:hidden;border:1px solid var(--border)}
+.tank-fill{height:100%;border-radius:5px;transition:width .7s ease}
+.tf-pms{background:linear-gradient(90deg,var(--cd),var(--c))}
+.tf-ago{background:linear-gradient(90deg,#92400E,#F59E0B)}
+.tank-right{width:106px;display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-shrink:0}
+.tank-l{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--ink)}
+.pct{font-size:10px;font-weight:700;border-radius:99px;padding:3px 8px}
+.pct-ok{background:var(--gb);color:var(--g);border:1px solid var(--gbr)}
+.pct-med{background:var(--ab);color:var(--a);border:1px solid var(--abr)}
+.pct-low{background:var(--rb);color:var(--r);border:1px solid var(--rbr)}
+
+/* ─── CHART ────────────────────────────────────────── */
+.chart-bars{display:flex;align-items:flex-end;gap:4px;height:100px}
+.chart-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.chart-stacks{width:100%;height:95px;display:flex;align-items:flex-end;gap:2px}
+.chart-b{flex:1;border-radius:3px 3px 0 0;min-height:3px;transition:opacity .15s}
+.chart-b:hover{opacity:.75}
+.b-pms{background:linear-gradient(to top,var(--cd),var(--c))}
+.b-ago{background:linear-gradient(to top,#92400E,#F59E0B)}
+.chart-day{font-size:9px;color:var(--ink4);font-weight:600}
+.chart-day.now{color:var(--c);font-weight:800}
+
+/* ─── PAYMENT ──────────────────────────────────────── */
+.pay-track{height:8px;border-radius:4px;overflow:hidden;display:flex;gap:2px;margin-bottom:16px}
+.pay-seg{height:100%;border-radius:3px}
+.pay-row{display:flex;align-items:center;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid var(--div)}
+.pay-row:last-child{border:none}
+.pay-dot{width:11px;height:11px;border-radius:3px;flex-shrink:0}
+.pay-name{font-size:13px;font-weight:600;color:var(--ink)}
+.pay-amt{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--ink)}
+.pay-pct{font-size:10.5px;color:var(--ink4);margin-top:2px}
+
+/* ─── ALERT ITEMS ──────────────────────────────────── */
+.al-item{display:flex;gap:11px;padding:13px 18px;border-bottom:1px solid var(--div);align-items:flex-start}
+.al-item:last-child{border:none}
+.al-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.al-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.al-desc{font-size:12px;color:var(--ink2);line-height:1.55}
+
+/* ─── QUICK ACTIONS ────────────────────────────────── */
+.qa{display:flex;align-items:center;gap:10px;padding:10px 13px;
+  background:var(--page);border:1.5px solid var(--border);border-radius:10px;
+  font-size:12.5px;font-weight:600;color:var(--ink);cursor:pointer;
+  width:100%;text-align:left;transition:all .15s;font-family:inherit;margin-bottom:7px}
+.qa:last-child{margin-bottom:0}
+.qa:hover{background:var(--cb);border-color:rgba(23,157,208,.3);color:var(--n);transform:translateY(-1px)}
+.qa:hover .qa-arrow{color:var(--c);transform:translateX(3px)}
+.qa-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.qa-arrow{color:var(--ink4);font-size:14px;margin-left:auto;transition:all .14s}
+
+/* ─── BUTTONS ──────────────────────────────────────── */
+.btn-main{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;
+  background:var(--c);color:#fff;border:none;border-radius:9px;
+  font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;
+  box-shadow:0 4px 12px rgba(23,157,208,.28);transition:all .16s}
+.btn-main:hover{background:var(--cd);transform:translateY(-1px)}
+.btn-ghost{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;
+  background:var(--white);color:var(--ink2);border:1.5px solid var(--border);
+  border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;
+  font-family:inherit;transition:all .14s}
+.btn-ghost:hover{background:var(--cb);color:var(--n);border-color:rgba(23,157,208,.28)}
+
+/* ─── BOTTOM NAV (mobile only) ─────────────────────── */
+.bottom-nav{
+  display:none;position:fixed;bottom:0;left:0;right:0;
+  background:var(--white);border-top:1px solid var(--border);
+  padding:8px 4px calc(8px + env(safe-area-inset-bottom));
+  z-index:300;
+}
+.bn-items{display:flex;align-items:center;justify-content:space-around}
+.bn-item{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:6px 14px;border-radius:10px;font-size:10px;font-weight:600;
+  color:var(--ink4);cursor:pointer;transition:all .14s;flex:1;min-width:0;
+  border:1px solid transparent;
+}
+.bn-item i{font-size:20px;line-height:1}
+.bn-item.on{color:var(--c);background:var(--cb);border-color:rgba(23,157,208,.2)}
+.bn-item:hover{color:var(--c)}
+
+/* ─── MOBILE DRAWER MENU ───────────────────────────── */
+.mob-menu{
+  display:none;position:fixed;inset:0;z-index:600;
+  align-items:flex-end;
+}
+.mob-menu.on{display:flex}
+.mob-overlay{position:absolute;inset:0;background:rgba(0,0,0,.55)}
+.mob-sheet{
+  position:relative;z-index:1;background:var(--n);
+  border-radius:20px 20px 0 0;width:100%;max-height:80vh;
+  overflow-y:auto;padding-bottom:calc(20px + env(safe-area-inset-bottom));
+}
+.mob-handle{width:40px;height:4px;background:rgba(255,255,255,.25);border-radius:2px;margin:12px auto 0}
+
+/* ─── SHARED / SUBPAGE CSS ─────────────────────────── */
+.data-table{width:100%;border-collapse:collapse}
+.data-table thead th{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+  color:var(--ink4);padding:10px 15px;background:var(--page);
+  border-bottom:1px solid var(--border);text-align:left}
+.data-table tbody td{font-size:12.5px;padding:10px 15px;border-bottom:1px solid var(--div);
+  color:var(--ink2);vertical-align:middle}
+.data-table tbody tr:hover td{background:#FAFBFC}
+.data-table tbody tr:last-child td{border:none}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:13px}
+.fgrid .ff{grid-column:1/-1}
+.flabel{font-size:11.5px;font-weight:600;color:var(--ink2);display:block;margin-bottom:5px}
+.finput{width:100%;background:var(--white);border:1.5px solid var(--border);
+  border-radius:9px;padding:10px 13px;font-size:14px;color:var(--ink);
+  outline:none;font-family:inherit;transition:border-color .14s,box-shadow .14s;
+  -webkit-appearance:none;}
+.finput:focus{border-color:var(--c);box-shadow:0 0 0 3px rgba(23,157,208,.1)}
+.finput[readonly]{background:var(--page);color:var(--ink3)}
+.fselect{width:100%;background:var(--white);border:1.5px solid var(--border);
+  border-radius:9px;padding:10px 13px;font-size:14px;color:var(--ink);
+  outline:none;font-family:inherit;-webkit-appearance:none;}
+.ftextarea{width:100%;background:var(--white);border:1.5px solid var(--border);
+  border-radius:9px;padding:10px 13px;font-size:14px;color:var(--ink);
+  outline:none;resize:vertical;font-family:inherit}
+.fcalc{background:var(--cb);border:1.5px solid rgba(23,157,208,.28);
+  border-radius:9px;padding:10px 13px;font-size:14px;font-weight:700;
+  color:var(--cd);font-family:'JetBrains Mono',monospace}
+.factions{display:flex;gap:10px;margin-top:8px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.role-banner{display:flex;align-items:center;gap:8px;padding:10px 15px;border-radius:10px;margin-bottom:16px;font-size:12.5px;font-weight:500}
+.role-owner{background:var(--cb);border:1.5px solid rgba(23,157,208,.28);color:#0B5874}
+.btn-primary{display:inline-flex;align-items:center;gap:7px;background:var(--c);color:#fff;border:none;padding:10px 20px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(23,157,208,.28);transition:all .16s}
+.btn-primary:hover{background:var(--cd);transform:translateY(-1px)}
+.btn-secondary{display:inline-flex;align-items:center;gap:6px;background:var(--white);color:var(--ink2);border:1.5px solid var(--border);padding:9px 17px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .14s}
+.btn-secondary:hover{background:var(--cb);color:var(--n);border-color:rgba(23,157,208,.28)}
+.btn-ok{background:var(--gb);border:1px solid var(--gbr);color:var(--g);padding:5px 12px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer}
+.btn-rej{background:var(--rb);border:1px solid var(--rbr);color:var(--r);padding:5px 12px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer}
+.card-action{font-size:11.5px;font-weight:600;color:var(--c);display:inline-flex;align-items:center;gap:4px;transition:gap .13s}
+.card-action:hover{gap:7px}
+.bdg-ok{background:var(--gb);color:var(--g);border:1px solid var(--gbr)}
+.bdg-info{background:var(--cb);color:var(--cd);border:1px solid rgba(23,157,208,.22)}
+.bdg-warn{background:var(--ab);color:var(--a);border:1px solid var(--abr)}
+.bdg-err{background:var(--rb);color:var(--r);border:1px solid var(--rbr)}
+.bdg-navy{background:var(--nb);color:var(--n);border:1px solid rgba(19,6,86,.14)}
+.bdg-p{background:var(--pb);color:var(--p);border:1px solid var(--pbr)}
+.bdg{display:inline-flex;align-items:center;border-radius:99px;padding:3px 9px;font-size:10.5px;font-weight:700;white-space:nowrap}
+
+/* ─── TOAST ────────────────────────────────────────── */
+#toast{position:fixed;bottom:80px;right:16px;z-index:999;background:var(--white);
+  border:1px solid var(--border);border-radius:13px;padding:13px 17px;
+  min-width:240px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 8px 28px rgba(0,0,0,.12);
+  transform:translateY(14px);opacity:0;transition:all .26s;pointer-events:none}
+#toast.show{transform:translateY(0);opacity:1;pointer-events:auto}
+.t-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.t-title{font-size:13px;font-weight:700;color:var(--ink)}
+.t-msg{font-size:11.5px;color:var(--ink3);margin-top:2px}
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+══════════════════════════════════════════════════ */
+
+/* ─── TABLET 768–1099px ────────────────────────────── */
+@media(max-width:1099px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  #sbOverlay.on{display:block}
+  .main{margin-left:0}
+  .tb-hamburger{display:flex}
+  /* Hide desktop clock on smaller screens */
+  .tc-clk{display:none}
+}
+
+/* ─── MOBILE ≤ 767px ───────────────────────────────── */
+@media(max-width:767px){
+  :root{--tb-h:54px}
+  html{font-size:13px}
+
+  /* Show bottom nav, hide desktop sidebar */
+  .bottom-nav{display:block}
+  .sidebar{display:none}
+  #sbOverlay{display:none!important}
+
+  /* Account for bottom nav */
+  .page-body{padding:14px 14px calc(14px + var(--bn-h));flex:1}
+
+  /* Full-width topbar */
+  .topbar{padding:0 14px}
+  .tb-title{font-size:15px}
+  .tb-hamburger{width:34px;height:34px;font-size:18px}
+  .tc-stn{display:none}
+  .tc-clk{display:none}
+
+  /* KPIs: 2 per row */
+  .kpi-row{grid-template-columns:1fr 1fr!important;gap:10px!important}
+  .kpi-hero{grid-column:1/-1} /* grand total spans full width */
+  .kpi-val{font-size:18px!important}
+  .kpi-hero .kpi-val{font-size:22px!important}
+
+  /* Sections: stack everything */
+  .row-grid{display:flex!important;flex-direction:column!important;gap:12px!important}
+
+  /* Tables: horizontal scroll */
+  .tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+  /* Cards: full width, less padding */
+  .card-body{padding:14px}
+  .card-h{padding:12px 15px}
+  .card-title{font-size:13px}
+
+  /* Tank rows: tighter */
+  .tank-meta{width:50px}
+  .tank-right{width:88px;gap:6px}
+  .tank-l{font-size:11px}
+  .pct{font-size:9.5px;padding:2px 7px}
+
+  /* Toast at bottom */
+  #toast{bottom:calc(var(--bn-h) + 10px);right:12px;left:12px;min-width:auto}
+
+  /* Alerts compact */
+  .al-item{padding:10px 14px}
+  .al-ico{width:30px;height:30px;font-size:14px}
+
+  /* QA buttons */
+  .qa{padding:9px 11px;font-size:12px}
+
+  /* Payment */
+  .pay-row{padding:9px 0}
+  .pay-name{font-size:12px}
+  .pay-amt{font-size:12px}
+
+  /* Chart: full width, no clipping */
+  .chart-bars{height:90px}
+  .chart-stacks{height:85px}
+}
+
+/* ─── SMALL MOBILE ≤ 375px ─────────────────────────── */
+@media(max-width:375px){
+  .page-body{padding:12px 12px calc(12px + var(--bn-h))}
+  .kpi-val{font-size:16px!important}
+  .kpi-hero .kpi-val{font-size:20px!important}
+  .kpi-ico-wrap{width:32px;height:32px;margin-bottom:10px}
+  .kpi-lbl{font-size:9.5px}
+  .tank-meta{width:46px}
+  .tank-id{font-size:11px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══ SIDEBAR OVERLAY ════════════════════════════════ -->
+<div id="sbOverlay" onclick="closeSidebar()"></div>
+
+<!-- ══ SIDEBAR ═══════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logobox"><img src="images/msolimpid.png" alt="MSO"/></div>
+    <div>
+      <div class="sb-bname">MSO Limpid</div>
+      <div class="sb-bsub">Operations Portal</div>
+    </div>
+  </div>
+  <div class="sb-station">
+    <span class="live-dot"></span>
+    <div>
+      <div class="sb-sname">MSO Limpid Co. Ltd</div>
+      <div class="sb-ssub">Mobil Authorised · Lagos</div>
+    </div>
+  </div>
+  <nav class="sb-nav">
+    <span class="sb-sec">Main</span>
+    <a class="sb-lnk on" href="dashboard-mso.html"><i class="bi bi-grid-1x2-fill"></i>Dashboard</a>
+    <a class="sb-lnk" href="overview.html" id="navOv" style="display:none"><i class="bi bi-globe2"></i>Overview — Both</a>
+    <a class="sb-lnk" href="approvals.html" id="navAp" style="display:none"><i class="bi bi-check2-square"></i>Approvals</a>
+    <span class="sb-sec">Operations</span>
+    <a class="sb-lnk" href="sales-mso.html"><i class="bi bi-pencil-square"></i>Record Sales</a>
+    <a class="sb-lnk" href="discharge-mso.html"><i class="bi bi-truck"></i>Discharge</a>
+    <a class="sb-lnk" href="dip-mso.html"><i class="bi bi-water"></i>Tank Dip</a>
+    <a class="sb-lnk" href="expenses-mso.html"><i class="bi bi-receipt-cutoff"></i>Expenses</a>
+    <a class="sb-lnk" href="shifts-mso.html"><i class="bi bi-clock-history"></i>Shift Log</a>
+    <a class="sb-lnk" href="incidents-mso.html"><i class="bi bi-exclamation-triangle"></i>Incidents</a>
+    <a class="sb-lnk" href="cashup-mso.html"><i class="bi bi-cash-coin"></i>Cash Reconciliation</a>
+    <a class="sb-lnk" href="variance-mso.html"><i class="bi bi-activity"></i>Stock Variance</a>
+    <span class="sb-sec">Reports</span>
+    <a class="sb-lnk" href="records-mso.html"><i class="bi bi-journal-text"></i>Records</a>
+    <a class="sb-lnk" href="pnl-mso.html"><i class="bi bi-bar-chart-line"></i>P&amp;L Report</a>
+    <a class="sb-lnk" href="price-mso.html"><i class="bi bi-tag"></i>Pump Prices</a>
+    <a class="sb-lnk" href="debtors-mso.html"><i class="bi bi-people"></i>Debtors</a>
+    <a class="sb-lnk" href="stock-mso.html"><i class="bi bi-box-seam"></i>Lubricant Stock</a>
+    <a class="sb-lnk" href="orders-mso.html"><i class="bi bi-cart3"></i>Purchase Orders</a>
+    <a class="sb-lnk" href="payroll-mso.html"><i class="bi bi-wallet2"></i>Payroll</a>
+    <a class="sb-lnk" href="summary-mso.html"><i class="bi bi-printer"></i>Daily Summary</a>
+    <span class="sb-sec">Communication</span>
+    <a class="sb-lnk" href="chat-mso.html"><i class="bi bi-chat-dots"></i>Staff Chat</a>
+    <span class="sb-sec">Switch</span>
+    <a class="sb-lnk" href="select.html"><i class="bi bi-arrow-left-right"></i>Switch Station</a>
+  </nav>
+  <div class="sb-foot">
+    <div class="sb-user">
+      <div class="sb-av" id="sbAv">—</div>
+      <div style="flex:1;min-width:0">
+        <div class="sb-un" id="sbName">Loading…</div>
+        <div class="sb-ur" id="sbRole">—</div>
+        <div class="sb-ubadge" id="sbBadge"></div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="doLogout()"><i class="bi bi-box-arrow-left"></i> Sign Out</button>
+  </div>
+</aside>
+
+<!-- ══ MAIN ═══════════════════════════════════════════ -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="tb-left">
+      <button class="tb-hamburger" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+      <div>
+        <div class="tb-title">Dashboard</div>
+        <div class="tb-sub" id="tbDate">—</div>
+      </div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-chip tc-stn"><i class="bi bi-geo-alt-fill" style="font-size:10px"></i> MSO</div>
+      <div class="tb-chip tc-live"><span class="ld"></span> LIVE</div>
+      <div class="tc-clk mono" id="tbClock">--:--:--</div>
+    </div>
+  </header>
+
+  <!-- PAGE CONTENT -->
+  <div class="page-body">
+
+    <!-- Admin notice -->
+    <div class="notice" id="adminNotice">
+      <i class="bi bi-eye-fill" style="flex-shrink:0"></i>
+      <span>Viewing as <strong>Admin</strong> — read-only. Data entry is done by supervisors and cashiers.</span>
+    </div>
+
+    <!-- ── KPI ROW ── -->
+    <div class="kpi-row d-grid gap-2 mb-3" style="grid-template-columns:1.3fr 1fr 1fr 1fr 1fr">
+
+      <!-- Grand Total hero -->
+      <div class="kpi kc kpi-hero">
+        <div class="kpi-ico-wrap"><i class="bi bi-currency-dollar" style="color:var(--c);font-size:20px"></i></div>
+        <div class="kpi-lbl">Grand Total</div>
+        <div class="kpi-val" id="kTotal">₦14,090,047</div>
+        <div class="kpi-sub"><span class="tup">↑ 8.4%</span> vs yesterday</div>
+      </div>
+
+      <div class="kpi kc">
+        <div class="kpi-ico-wrap" style="background:var(--cb)"><i class="bi bi-fuel-pump" style="color:var(--cd);font-size:18px"></i></div>
+        <div class="kpi-lbl">PMS Sold</div>
+        <div class="kpi-val" id="kPMS">9,811 L</div>
+        <div class="kpi-sub"><span class="tup">↑ 5.2%</span></div>
+      </div>
+
+      <div class="kpi ka">
+        <div class="kpi-ico-wrap" style="background:var(--ab)"><i class="bi bi-droplet-fill" style="color:var(--a);font-size:18px"></i></div>
+        <div class="kpi-lbl">AGO Sold</div>
+        <div class="kpi-val" id="kAGO">885 L</div>
+        <div class="kpi-sub"><span class="tfl">→ Steady</span></div>
+      </div>
+
+      <div class="kpi kg">
+        <div class="kpi-ico-wrap" style="background:var(--gb)"><i class="bi bi-bank2" style="color:var(--g);font-size:18px"></i></div>
+        <div class="kpi-lbl">Cash to Bank</div>
+        <div class="kpi-val" id="kCash">₦3,206,388</div>
+        <div class="kpi-sub" style="color:var(--ink3)">After POS charges</div>
+      </div>
+
+      <div class="kpi kr">
+        <div class="kpi-ico-wrap" style="background:var(--rb)"><i class="bi bi-arrow-down-circle-fill" style="color:var(--r);font-size:18px"></i></div>
+        <div class="kpi-lbl">Expenses</div>
+        <div class="kpi-val" id="kExp">₦0</div>
+        <div class="kpi-sub"><span class="tup">↓ Lower</span></div>
+      </div>
+
+    </div>
+
+    <!-- ── PMS / AGO / PAYMENT (stack on mobile) ── -->
+    <div class="row-grid d-grid gap-3 mb-3" style="grid-template-columns:1.7fr 1fr 1.1fr">
+
+      <!-- PMS table -->
+      <div class="card">
+        <div class="card-h">
+          <div>
+            <div class="card-title">PMS Dipping Summary</div>
+            <div class="card-sub">3 underground tanks — today</div>
+          </div>
+          <span class="bdg bc">3 Tanks</span>
+        </div>
+        <div class="tbl-scroll">
+          <table class="dt">
+            <thead><tr><th>Tank</th><th>Opening</th><th>Closing</th><th>Diff</th><th>Margin</th></tr></thead>
+            <tbody>
+              <tr><td><span class="bdg bc">TK 1</span></td><td class="mono" style="font-weight:600">17,100L</td><td class="mono" style="font-weight:600">10,000L</td><td class="mono" style="font-weight:700;color:var(--cd)">7,100L</td><td class="mono" style="font-weight:700;color:var(--a)">385.24L</td></tr>
+              <tr><td><span class="bdg bc">TK 2</span></td><td class="mono">2,300L</td><td class="mono">50L</td><td class="mono" style="font-weight:700;color:var(--cd)">2,250L</td><td class="mono" style="font-weight:700;color:var(--a)">79.92L</td></tr>
+              <tr><td><span class="bdg bgy">TK 3</span></td><td class="mono" style="color:var(--ink4)">0L</td><td class="mono" style="color:var(--ink4)">0L</td><td class="mono" style="color:var(--ink4)">0L</td><td class="mono" style="color:var(--ink4)">0L</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:11px 18px;background:var(--cb);border-top:1px solid rgba(23,157,208,.16);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
+          <span style="font-size:12.5px;font-weight:700;color:var(--n)">Total PMS Margin</span>
+          <span class="mono" style="font-size:14px;font-weight:800;color:var(--cd)">465.16L · ₦12,479,795</span>
+        </div>
+      </div>
+
+      <!-- AGO -->
+      <div class="card">
+        <div class="card-h">
+          <div>
+            <div class="card-title">AGO Performance</div>
+            <div class="card-sub">TK4 — Diesel · P1·N1</div>
+          </div>
+          <span class="bdg bg">75%</span>
+        </div>
+        <div class="card-body">
+          <div class="row g-2 mb-2">
+            <div class="col-6"><div style="background:var(--page);border:1px solid var(--border);border-radius:9px;padding:10px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--ink4);margin-bottom:4px">Opening</div><div class="mono" style="font-size:16px;font-weight:800;color:var(--ink)">3,200L</div></div></div>
+            <div class="col-6"><div style="background:var(--page);border:1px solid var(--border);border-radius:9px;padding:10px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--ink4);margin-bottom:4px">Closing</div><div class="mono" style="font-size:16px;font-weight:800;color:var(--ink)">2,400L</div></div></div>
+            <div class="col-6"><div style="background:var(--ab);border:1px solid var(--abr);border-radius:9px;padding:10px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--a);margin-bottom:4px">Difference</div><div class="mono" style="font-size:16px;font-weight:800;color:var(--a)">800L</div></div></div>
+            <div class="col-6"><div style="background:var(--rb);border:1px solid var(--rbr);border-radius:9px;padding:10px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--r);margin-bottom:4px">Margin</div><div class="mono" style="font-size:16px;font-weight:800;color:var(--r)">85.24L</div></div></div>
+          </div>
+          <div style="background:var(--ab);border:1.5px solid var(--abr);border-radius:9px;padding:11px 13px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px">
+            <span style="font-size:12px;color:var(--ink2);font-weight:500">885L × ₦1,819</span>
+            <span class="mono" style="font-size:15px;font-weight:800;color:var(--a)">₦1,610,251</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment -->
+      <div class="card">
+        <div class="card-h">
+          <div>
+            <div class="card-title">Payment Breakdown</div>
+            <div class="card-sub">POS · Transfer · Cash</div>
+          </div>
+        </div>
+        <div class="card-body" id="payBlock"></div>
+      </div>
+    </div>
+
+    <!-- ── TANKS + CHART ── -->
+    <div class="row-grid d-grid gap-3 mb-3" style="grid-template-columns:1fr 1.6fr">
+
+      <!-- Tanks -->
+      <div class="card">
+        <div class="card-h">
+          <div>
+            <div class="card-title">Live Tank Levels</div>
+            <div class="card-sub">4 tanks · latest dip</div>
+          </div>
+          <button class="btn-ghost" id="dipBtn" onclick="location.href='dip-mso.html'" style="padding:5px 11px;font-size:11.5px">
+            <i class="bi bi-plus-circle"></i> Dip
+          </button>
+        </div>
+        <div class="card-body d-flex flex-column gap-3">
+          <div class="tank-row">
+            <div class="tank-meta"><div class="tank-id" style="color:var(--cd)">TK 1</div><div class="tank-pump">PMS·P5 P6</div></div>
+            <div class="tank-track flex-grow-1"><div class="tank-fill tf-pms" style="width:51%"></div></div>
+            <div class="tank-right"><div class="tank-l">10,000L</div><div class="pct pct-med">51%</div></div>
+          </div>
+          <div class="tank-row">
+            <div class="tank-meta"><div class="tank-id" style="color:var(--r)">TK 2</div><div class="tank-pump">PMS·P1 P2</div></div>
+            <div class="tank-track flex-grow-1"><div class="tank-fill tf-pms" style="width:2%"></div></div>
+            <div class="tank-right"><div class="tank-l">50L</div><div class="pct pct-low">2%</div></div>
+          </div>
+          <div class="tank-row">
+            <div class="tank-meta"><div class="tank-id" style="color:var(--r)">TK 3</div><div class="tank-pump">PMS·P3 P4</div></div>
+            <div class="tank-track flex-grow-1"><div class="tank-fill tf-pms" style="width:0%"></div></div>
+            <div class="tank-right"><div class="tank-l">0L</div><div class="pct pct-low">0%</div></div>
+          </div>
+          <div class="tank-row">
+            <div class="tank-meta"><div class="tank-id" style="color:var(--a)">TK 4</div><div class="tank-pump">AGO·P1 N1</div></div>
+            <div class="tank-track flex-grow-1"><div class="tank-fill tf-ago" style="width:75%"></div></div>
+            <div class="tank-right"><div class="tank-l">2,400L</div><div class="pct pct-ok">75%</div></div>
+          </div>
+          <div style="background:var(--rb);border:1.5px solid var(--rbr);border-radius:9px;padding:9px 13px;display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--r)">
+            <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+            TK 2 at 2% — TK 3 empty. Discharge needed today.
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="card">
+        <div class="card-h">
+          <div>
+            <div class="card-title">7-Day Sales Trend</div>
+            <div class="card-sub">PMS vs AGO — litres dispensed</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart-bars mb-2" id="chartBars"></div>
+          <div class="d-flex gap-3 mb-3">
+            <div class="d-flex align-items-center gap-2" style="font-size:11.5px;color:var(--ink2);font-weight:500"><div style="width:9px;height:9px;border-radius:2px;background:var(--c)"></div>PMS</div>
+            <div class="d-flex align-items-center gap-2" style="font-size:11.5px;color:var(--ink2);font-weight:500"><div style="width:9px;height:9px;border-radius:2px;background:#F59E0B"></div>AGO</div>
+          </div>
+          <div class="row g-2">
+            <div class="col-6">
+              <div style="background:var(--cb);border:1.5px solid rgba(23,157,208,.2);border-radius:10px;padding:12px 13px">
+                <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--cd);margin-bottom:4px">PMS Revenue</div>
+                <div class="mono" style="font-size:15px;font-weight:800;color:var(--n)">₦12,479,795</div>
+                <div style="font-size:10.5px;color:var(--ink4);margin-top:3px">9,811L @ ₦1,272</div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div style="background:var(--ab);border:1.5px solid var(--abr);border-radius:10px;padding:12px 13px">
+                <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--a);margin-bottom:4px">AGO Revenue</div>
+                <div class="mono" style="font-size:15px;font-weight:800;color:var(--ink)">₦1,610,251</div>
+                <div style="font-size:10.5px;color:var(--ink4);margin-top:3px">885L @ ₦1,819</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TRANSACTIONS + SIDE ── -->
+    <div class="row-grid d-grid gap-3" style="grid-template-columns:1.7fr 1fr">
+
+      <!-- Transactions -->
+      <div class="card">
+        <div class="card-h">
+          <div>
+            <div class="card-title">Recent Transactions</div>
+            <div class="card-sub">Tank · pump · nozzle · staff</div>
+          </div>
+          <a href="records-mso.html" class="card-action">All <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="tbl-scroll">
+          <table class="dt" id="txnTable"></table>
+        </div>
+      </div>
+
+      <!-- Right col -->
+      <div class="d-flex flex-column gap-3">
+
+        <!-- Expenses -->
+        <div class="card">
+          <div class="card-h">
+            <div>
+              <div class="card-title">Expenses</div>
+              <div class="card-sub" id="expSub">₦0 today</div>
+            </div>
+            <button class="btn-ghost" id="addExpBtn" onclick="location.href='expenses-mso.html'" style="padding:5px 11px;font-size:11.5px">+ Add</button>
+          </div>
+          <div id="expBlock">
+            <div style="padding:20px 18px;text-align:center;color:var(--ink4);font-size:12.5px">
+              <i class="bi bi-check-circle" style="font-size:26px;display:block;margin-bottom:8px;color:var(--border)"></i>
+              Nothing spent today
+            </div>
+          </div>
+        </div>
+
+        <!-- Alerts -->
+        <div class="card">
+          <div class="card-h">
+            <div class="card-title">Alerts</div>
+            <span class="bdg br" id="alertSub">3</span>
+          </div>
+          <div id="alertBlock"></div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+          <div class="card-h"><div class="card-title">Quick Actions</div></div>
+          <div style="padding:12px 13px" id="qaBlock"></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /page-body -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ══ BOTTOM NAV (mobile) ════════════════════════════ -->
+<nav class="bottom-nav">
+  <div class="bn-items">
+    <a class="bn-item on" href="dashboard-mso.html">
+      <i class="bi bi-grid-1x2-fill"></i>
+      <span>Home</span>
+    </a>
+    <a class="bn-item" href="sales-mso.html">
+      <i class="bi bi-pencil-square"></i>
+      <span>Sales</span>
+    </a>
+    <a class="bn-item" href="dip-mso.html">
+      <i class="bi bi-water"></i>
+      <span>Tank Dip</span>
+    </a>
+    <a class="bn-item" href="expenses-mso.html">
+      <i class="bi bi-receipt-cutoff"></i>
+      <span>Expenses</span>
+    </a>
+    <div class="bn-item" onclick="openMobMenu()">
+      <i class="bi bi-list"></i>
+      <span>More</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ MOBILE MORE MENU ═══════════════════════════════ -->
+<div class="mob-menu" id="mobMenu">
+  <div class="mob-overlay" onclick="closeMobMenu()"></div>
+  <div class="mob-sheet">
+    <div class="mob-handle"></div>
+    <div style="padding:18px 16px 4px;display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:16px;font-weight:800;color:#fff">Menu</div>
+      <button onclick="closeMobMenu()" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);font-size:18px;display:flex;align-items:center;justify-content:center">×</button>
+    </div>
+    <div style="padding:6px 12px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <a href="cashup-mso.html" style="display:flex;align-items:center;gap:9px;padding:12px;background:rgba(255,255,255,.07);border-radius:11px;color:rgba(255,255,255,.8);font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.1)"><i class="bi bi-cash-coin" style="font-size:18px;color:#179DD0"></i>Cash Reconciliation</a>
+        <a href="discharge-mso.html" style="display:flex;align-items:center;gap:9px;padding:12px;background:rgba(255,255,255,.07);border-radius:11px;color:rgba(255,255,255,.8);font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.1)"><i class="bi bi-truck" style="font-size:18px;color:#F59E0B"></i>Discharge</a>
+        <a href="shifts-mso.html" style="display:flex;align-items:center;gap:9px;padding:12px;background:rgba(255,255,255,.07);border-radius:11px;color:rgba(255,255,255,.8);font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.1)"><i class="bi bi-clock-history" style="font-size:18px;color:#A78BFA"></i>Shift Log</a>
+        <a href="incidents-mso.html" style="display:flex;align-items:center;gap:9px;padding:12px;background:rgba(255,255,255,.07);border-radius:11px;color:rgba(255,255,255,.8);font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.1)"><i class="bi bi-exclamation-triangle" style="font-size:18px;color:#F87171"></i>Incidents</a>
+        <a href="variance-mso.html" style="display:flex;align-items:center;gap:9px;padding:12px;background:rgba(255,255,255,.07);border-radius:11px;color:rgba(255,255,255,.8);font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.1)"><i class="bi bi-activity" style="font-size:18px;color:#34D399"></i>Variance</a>
+        <a href="pnl-mso.html" style="display:flex;align-items:center;gap:9px;padding:12px;background:rgba(255,255,255,.07);border-radius:11px;color:rgba(255,255,255,.8);font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.1)"><i class="bi bi-bar-chart-line" style="font-size:18px;color:#60A5FA"></i>P&L Report</a>
+      </div>
+      <div style="border-top:1px solid rgba(255,255,255,.08);padding-top:10px;margin-top:4px">
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.22);padding:4px 3px 8px">Reports & Finance</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <a href="records-mso.html" style="display:flex;align-items:center;gap:9px;padding:12px;background:rgba(255,255,255,.07);border-radius:11px;color:rgba(255,255,255,.8);font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.1)"><i class="bi bi-journal-text" style="font-size:18px;color:#94A3B8"></i>Records</a>
+          <a href="debtors-mso.html" style="display:flex;align-items:center;gap:9px;padding:12px;background:rgba(255,255,255,.07);border-radius:11px;color:rgba(255,255,255,.8);font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.1)"><i class="bi bi-people" style="font-size:18px;color:#94A3B8"></i>Debtors</a>
+          <a href="orders-mso.html" style="display:flex;align-items:center;gap:9px;padding:12px;background:rgba(255,255,255,.07);border-radius:11px;color:rgba(255,255,255,.8);font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.1)"><i class="bi bi-cart3" style="font-size:18px;color:#94A3B8"></i>Orders</a>
+          <a href="payroll-mso.html" style="display:flex;align-items:center;gap:9px;padding:12px;background:rgba(255,255,255,.07);border-radius:11px;color:rgba(255,255,255,.8);font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.1)"><i class="bi bi-wallet2" style="font-size:18px;color:#94A3B8"></i>Payroll</a>
+          <a href="summary-mso.html" style="display:flex;align-items:center;gap:9px;padding:12px;background:rgba(255,255,255,.07);border-radius:11px;color:rgba(255,255,255,.8);font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.1)"><i class="bi bi-printer" style="font-size:18px;color:#94A3B8"></i>Summary</a>
+          <a href="chat-mso.html" style="display:flex;align-items:center;gap:9px;padding:12px;background:rgba(255,255,255,.07);border-radius:11px;color:rgba(255,255,255,.8);font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.1)"><i class="bi bi-chat-dots" style="font-size:18px;color:#94A3B8"></i>Staff Chat</a>
+        </div>
+      </div>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)">
+        <button onclick="doLogout()" style="width:100%;padding:12px;border-radius:11px;background:rgba(220,38,38,.14);border:1px solid rgba(220,38,38,.28);color:#FCA5A5;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit">
+          <i class="bi bi-box-arrow-left"></i> Sign Out
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast">
+  <div class="t-ico" id="tIco"></div>
+  <div><div class="t-title" id="tTitle">—</div><div class="t-msg" id="tMsg"></div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+var SCRIPT_URL='YOUR_DEPLOYED_WEBAPP_URL';
+var _u=JSON.parse(sessionStorage.getItem('mso_u')||'null');
+if(!_u){window.location.replace('login.html');}
+var ROLE=_u?_u.role:'', NAME=_u?_u.name:'', USER=_u?_u.u:'';
+var IS_OWNER=ROLE==='owner', IS_GM=ROLE==='gm';
+
+/* ── User init ── */
+(function(){
+  if(!_u)return;
+  var ini=(NAME||'U').split(' ').map(function(n){return n[0]||'';}).join('').slice(0,2).toUpperCase();
+  document.getElementById('sbAv').textContent=ini;
+  document.getElementById('sbName').textContent=NAME||USER;
+  document.getElementById('sbRole').textContent=ROLE==='gm'?'General Manager':ROLE.charAt(0).toUpperCase()+ROLE.slice(1);
+  var b=document.getElementById('sbBadge');
+  var s={owner:'background:#F0FDF4;color:#16A34A',gm:'background:#EDE9FE;color:#6D28D9',supervisor:'background:var(--cb);color:var(--cd)',cashier:'background:var(--ab);color:var(--a)'};
+  b.style.cssText=s[ROLE]||'';
+  b.textContent=ROLE==='gm'?'General Manager':ROLE.charAt(0).toUpperCase()+ROLE.slice(1);
+  if(IS_OWNER||IS_GM){['navOv','navAp'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='block';});}
+  if(IS_OWNER){
+    document.getElementById('adminNotice').style.display='flex';
+    ['dipBtn','addExpBtn'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});
+  }
+})();
+
+/* ── Clock ── */
+function tick(){
+  var n=new Date();
+  var cl=document.getElementById('tbClock'); if(cl)cl.textContent=n.toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  var dt=document.getElementById('tbDate'); if(dt)dt.textContent=n.toLocaleDateString('en-NG',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+tick(); setInterval(tick,1000);
+
+/* ── Sidebar ── */
+function toggleSidebar(){
+  var sb=document.getElementById('sidebar');var ov=document.getElementById('sbOverlay');
+  var open=sb.classList.contains('open');
+  if(open){sb.classList.remove('open');ov.classList.remove('on');document.body.style.overflow='';}
+  else{sb.classList.add('open');ov.classList.add('on');document.body.style.overflow='hidden';}
+}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbOverlay').classList.remove('on');document.body.style.overflow='';}
+function openMobMenu(){document.getElementById('mobMenu').classList.add('on');document.body.style.overflow='hidden';}
+function closeMobMenu(){document.getElementById('mobMenu').classList.remove('on');document.body.style.overflow='';}
+function doLogout(){sessionStorage.clear();window.location.replace('login.html');}
+
+/* ── Toast ── */
+function toast(t,m,type){
+  var ic=document.getElementById('tIco');
+  var bgs={ok:'#F0FDF4',err:'#FEF2F2',info:'#EAF6FC',warn:'#FFFBEB'};
+  var icons={ok:'bi-check-circle-fill',err:'bi-x-circle-fill',info:'bi-info-circle-fill',warn:'bi-exclamation-triangle-fill'};
+  var cols={ok:'#16A34A',err:'#DC2626',info:'#179DD0',warn:'#B45309'};
+  ic.style.background=bgs[type]||'#F1F5F9';
+  ic.innerHTML='<i class="bi '+(icons[type]||'bi-bell-fill')+'" style="color:'+(cols[type]||'#64748B')+'"></i>';
+  document.getElementById('tTitle').textContent=t;
+  document.getElementById('tMsg').textContent=m||'';
+  var el=document.getElementById('toast');
+  el.classList.add('show'); setTimeout(function(){el.classList.remove('show');},3500);
+}
+
+/* ── Payment split ── */
+var PAY=[{n:'POS (MP)',a:5150848,c:'#179DD0'},{n:'Bank Transfer',a:5732810,c:'#130656'},{n:'Cash',a:3206388,c:'#16A34A'}];
+var ptot=PAY.reduce(function(s,p){return s+p.a;},0);
+document.getElementById('payBlock').innerHTML=
+  '<div class="pay-track">'+PAY.map(function(p){return '<div class="pay-seg" style="flex:'+p.a+';background:'+p.c+'"></div>';}).join('')+'</div>'+
+  PAY.map(function(p){return '<div class="pay-row"><div class="d-flex align-items-center gap-2"><div class="pay-dot" style="background:'+p.c+'"></div><div class="pay-name">'+p.n+'</div></div><div class="text-end"><div class="pay-amt">₦'+p.a.toLocaleString()+'</div><div class="pay-pct">'+Math.round(p.a/ptot*100)+'%</div></div></div>';}).join('')+
+  '<div class="d-flex justify-content-between align-items-center pt-2 mt-1" style="border-top:1px solid var(--div)"><span style="font-size:11.5px;color:var(--ink3);font-weight:500">Grand Total</span><span class="mono" style="font-size:15px;font-weight:800;color:var(--n)">₦'+ptot.toLocaleString()+'</span></div>';
+
+/* ── Chart ── */
+var D=['Mon','Tue','Wed','Thu','Fri','Sat','Today'];
+var P=[7820,8100,7200,8900,9400,10500,9811], A=[720,880,600,920,800,1100,885];
+var mx=Math.max.apply(null,P.concat(A));
+document.getElementById('chartBars').innerHTML=D.map(function(d,i){
+  var ph=Math.round(P[i]/mx*92), ah=Math.round(A[i]/mx*92);
+  return '<div class="chart-col"><div class="chart-stacks"><div class="chart-b b-pms" style="height:'+ph+'px"></div><div class="chart-b b-ago" style="height:'+ah+'px"></div></div><div class="chart-day'+(i===6?' now':'')+'">'+d+'</div></div>';
+}).join('');
+
+/* ── Transactions ── */
+var TXN=[
+  {t:'18:44',tk:'TK2·P2·N1',pr:'PMS',l:25,a:31800,m:'POS',by:'Harrison'},
+  {t:'17:31',tk:'TK4·P1·N1',pr:'AGO',l:100,a:181900,m:'TRF',by:'Harrison'},
+  {t:'16:20',tk:'TK1·P5·N2',pr:'PMS',l:18,a:22896,m:'Cash',by:'Tony'},
+  {t:'15:08',tk:'TK2·P1·N1',pr:'PMS',l:30,a:38160,m:'POS',by:'Tony'},
+  {t:'14:50',tk:'TK1·P6·N1',pr:'PMS',l:40,a:50880,m:'TRF',by:'Harrison'},
+];
+var mc={POS:'bc',Cash:'bg',TRF:'bn'};
+document.getElementById('txnTable').innerHTML=
+  '<thead><tr><th>Time</th><th>Tank·Pump</th><th>Prod</th><th>Litres</th><th>Amount</th><th>Method</th><th>Staff</th></tr></thead><tbody>'+
+  TXN.map(function(t){return '<tr>'+
+    '<td class="mono" style="color:var(--ink4);font-size:11.5px">'+t.t+'</td>'+
+    '<td><span class="bdg bc" style="font-size:10px">'+t.tk+'</span></td>'+
+    '<td><span class="bdg '+(t.pr==='AGO'?'ba':'bc')+'">'+t.pr+'</span></td>'+
+    '<td class="mono" style="font-weight:600">'+t.l+'L</td>'+
+    '<td class="mono" style="font-weight:700;color:var(--ink)">₦'+t.a.toLocaleString()+'</td>'+
+    '<td><span class="bdg '+(mc[t.m]||'bc')+'">'+t.m+'</span></td>'+
+    '<td style="font-size:11.5px;color:var(--ink3)">'+t.by+'</td>'+
+  '</tr>';}).join('')+'</tbody>';
+
+/* ── Alerts ── */
+var ALS=[
+  {ico:'bi-exclamation-triangle-fill',ibg:'#FEF2F2',ic:'#DC2626',t:'TK 2 & TK 3 Critical',d:'Discharge required today.'},
+  {ico:'bi-moon-stars-fill',ibg:'#EEF0FB',ic:'#130656',t:'Night Shift P.O.',d:'Tony to raise P.O. tonight.'},
+  {ico:'bi-arrow-left-right',ibg:'#EAF6FC',ic:'#179DD0',t:'Rotation Mon',d:'Harrison & Tony swap dip.'},
+];
+document.getElementById('alertBlock').innerHTML=ALS.map(function(a){
+  return '<div class="al-item"><div class="al-ico" style="background:'+a.ibg+'"><i class="bi '+a.ico+'" style="color:'+a.ic+'"></i></div><div><div class="al-title">'+a.t+'</div><div class="al-desc">'+a.d+'</div></div></div>';
+}).join('');
+
+/* ── Quick Actions ── */
+var QA=[
+  {ico:'bi-calculator',ibg:'#F0FDF4',ic:'#16A34A',l:'Cash Reconciliation',h:'cashup-mso.html',r:['owner','gm','supervisor','cashier']},
+  {ico:'bi-graph-up-arrow',ibg:'#EAF6FC',ic:'#179DD0',l:'Stock Variance',h:'variance-mso.html',r:['owner','gm']},
+  {ico:'bi-bar-chart-line-fill',ibg:'#EDE9FE',ic:'#6D28D9',l:'P&L Report',h:'pnl-mso.html',r:['owner','gm']},
+  {ico:'bi-check2-circle',ibg:'#FFFBEB',ic:'#B45309',l:'Approvals',h:'approvals.html',r:['owner','gm']},
+  {ico:'bi-truck',ibg:'#FEF2F2',ic:'#DC2626',l:'Discharge',h:'discharge-mso.html',r:['gm','supervisor']},
+  {ico:'bi-printer-fill',ibg:'#EEF0FB',ic:'#130656',l:'Daily Summary',h:'summary-mso.html',r:['owner','gm','supervisor']},
+];
+document.getElementById('qaBlock').innerHTML=QA.filter(function(q){return q.r.indexOf(ROLE)>=0;}).map(function(q){
+  return '<button class="qa" onclick="location.href=\''+q.h+'\'">' +
+    '<div class="qa-ico" style="background:'+q.ibg+'"><i class="bi '+q.ico+'" style="color:'+q.ic+'"></i></div>' +
+    q.l + '<i class="bi bi-chevron-right qa-arrow"></i></button>';
+}).join('');
+
+/* ── Live data ── */
+if(SCRIPT_URL!=='YOUR_DEPLOYED_WEBAPP_URL'){
+  fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action:'getDashboard',station:'mso',username:USER})})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(!d.ok)return;
+      if(d.grandTotal)document.getElementById('kTotal').textContent='₦'+Number(d.grandTotal).toLocaleString();
+      if(d.pmsLitres)document.getElementById('kPMS').textContent=Number(d.pmsLitres).toLocaleString()+' L';
+      if(d.agoLitres)document.getElementById('kAGO').textContent=Number(d.agoLitres).toLocaleString()+' L';
+      if(d.cashToBank)document.getElementById('kCash').textContent='₦'+Number(d.cashToBank).toLocaleString();
+      if(d.expenses)document.getElementById('kExp').textContent='₦'+Number(d.expenses).toLocaleString();
+    }).catch(function(){});
+}
+</script>
+
+<script src="/js/pwa-core.js"></script>
+</body>
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="theme-color" content="#130656"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icons/icon.png"/>
+<title>Select Station — MSO Digital Operations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+
+/* ═══ RESET ═════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  height:100%;font-family:'Inter',sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ═══ TOKENS ════════════════════════════════════════════════ */
+:root{
+  --c:#179DD0;    /* brand cyan        */
+  --cd:#1188B5;   /* cyan dark         */
+  --cl:#EAF6FC;   /* cyan tint         */
+  --n:#130656;    /* brand navy        */
+  --a:#F59E0B;    /* amber — AGO/MRS   */
+  --ad:#D97706;   /* amber dark        */
+  --al:rgba(245,158,11,.12); /* amber tint */
+  --g:#22C55E;    /* green — live dot  */
+  --bg:#0A0E1A;   /* page background   */
+  --border:rgba(255,255,255,.08);
+  --text:rgba(255,255,255,.42);
+}
+
+/* ═══ BODY ═══════════════════════════════════════════════════ */
+body{
+  background:var(--bg);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;overflow:hidden;
+}
+
+/* ═══ BACKGROUND ════════════════════════════════════════════ */
+/* Barely-there grid — NOT a design feature */
+.bg-grid{
+  position:fixed;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(23,157,208,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(23,157,208,.025) 1px,transparent 1px);
+  background-size:56px 56px;
+  mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%);
+  -webkit-mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%);
+}
+/* Depth vignette — brand navy, top center only */
+.bg-depth{
+  position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 45% at 50% 0%, rgba(19,6,86,.55) 0%, transparent 70%);
+}
+/* No colored blobs. No amber glow. No blue glow. */
+
+/* ═══ WRAP ═══════════════════════════════════════════════════ */
+.wrap{
+  position:relative;z-index:1;
+  width:100%;max-width:880px;
+  padding:40px 24px;text-align:center;
+}
+
+/* ═══ TOP LOGO ══════════════════════════════════════════════ */
+.top-logo{
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:32px;
+}
+.top-logo img{
+  width:60px;height:60px;border-radius:15px;object-fit:contain;
+  background:rgba(255,255,255,.06);padding:7px;
+  border:1px solid var(--border);
+  box-shadow:0 4px 20px rgba(0,0,0,.3);
+}
+
+/* ═══ HEADINGS ══════════════════════════════════════════════ */
+.welcome{
+  font-size:12.5px;font-weight:600;color:rgba(255,255,255,.35);
+  letter-spacing:.6px;text-transform:uppercase;margin-bottom:9px;
+  font-family:'JetBrains Mono',monospace;
+}
+h1{
+  font-size:clamp(1.8rem,4vw,2.7rem);font-weight:900;
+  letter-spacing:-.04em;color:#fff;margin-bottom:9px;
+  line-height:1.05;
+}
+.subtitle{font-size:14.5px;color:var(--text);margin-bottom:10px}
+.datetime{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11.5px;color:rgba(255,255,255,.2);
+  margin-bottom:40px;letter-spacing:.3px;
+}
+
+/* ═══ STATION CARDS ═════════════════════════════════════════ */
+.stations{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:36px}
+
+.station-card{
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--border);border-radius:20px;
+  padding:30px 26px;text-align:left;cursor:pointer;
+  transition:all .24s;position:relative;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+/* Hover fill — brand-specific, not generic */
+.station-card::before{
+  content:'';position:absolute;inset:0;opacity:0;transition:opacity .24s;
+  border-radius:20px;
+}
+.station-card:hover{transform:translateY(-4px)}
+
+/* ── MSO card — brand cyan ── */
+.sc-mso{border-color:rgba(23,157,208,.28)}
+.sc-mso::before{background:linear-gradient(135deg,rgba(23,157,208,.07) 0%,transparent 65%)}
+.sc-mso:hover{
+  border-color:rgba(23,157,208,.6);
+  box-shadow:0 20px 56px rgba(23,157,208,.14),0 4px 16px rgba(0,0,0,.25);
+}
+.sc-mso:hover::before{opacity:1}
+
+/* ── MRS card — amber (diesel) ── */
+.sc-mrs{border-color:rgba(245,158,11,.25)}
+.sc-mrs::before{background:linear-gradient(135deg,rgba(245,158,11,.07) 0%,transparent 65%)}
+.sc-mrs:hover{
+  border-color:rgba(245,158,11,.55);
+  box-shadow:0 20px 56px rgba(245,158,11,.12),0 4px 16px rgba(0,0,0,.25);
+}
+.sc-mrs:hover::before{opacity:1}
+
+/* Arrow */
+.sc-arrow{
+  position:absolute;top:26px;right:24px;
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .22s;
+}
+.sc-mso .sc-arrow{background:rgba(23,157,208,.12);color:var(--c)}
+.sc-mrs .sc-arrow{background:rgba(245,158,11,.12);color:var(--a)}
+.station-card:hover .sc-arrow{transform:translateX(3px) scale(1.08)}
+.sc-mso:hover .sc-arrow{background:rgba(23,157,208,.22)}
+.sc-mrs:hover .sc-arrow{background:rgba(245,158,11,.22)}
+
+/* Badge */
+.sc-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  border-radius:99px;padding:5px 13px;
+  font-size:10.5px;font-weight:700;letter-spacing:.5px;
+  text-transform:uppercase;margin-bottom:20px;
+}
+.badge-mso{background:rgba(23,157,208,.12);border:1px solid rgba(23,157,208,.28);color:var(--c)}
+.badge-mrs{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.28);color:var(--a)}
+
+/* Live dot */
+.live-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--g);
+  box-shadow:0 0 6px rgba(34,197,94,.8);
+  animation:blink 2.2s ease-in-out infinite;flex-shrink:0;
+}
+/* MRS dot offset so animations stagger */
+.sc-mrs .live-dot{animation-delay:.6s}
+
+/* Logo */
+.sc-logo{
+  width:46px;height:46px;border-radius:12px;object-fit:contain;
+  padding:6px;margin-bottom:16px;display:block;
+}
+.sc-mso .sc-logo{background:rgba(23,157,208,.12);border:1px solid rgba(23,157,208,.2)}
+.sc-mrs .sc-logo{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.18)}
+
+/* Name */
+.sc-name{font-size:19px;font-weight:900;letter-spacing:-.03em;margin-bottom:5px}
+.sc-mso .sc-name{color:#fff}
+.sc-mrs .sc-name{color:#FDE68A}
+
+/* Address */
+.sc-addr{font-size:12.5px;color:var(--text);margin-bottom:20px}
+
+/* Stats grid */
+.sc-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sc-stat{background:rgba(255,255,255,.04);border-radius:10px;padding:11px 13px}
+.sc-stat-n{
+  font-size:17px;font-weight:800;letter-spacing:-.03em;
+  font-family:'JetBrains Mono',monospace;
+}
+.sc-mso .sc-stat-n{color:var(--c)}   /* cyan for MSO data */
+.sc-mrs .sc-stat-n{color:var(--a)}   /* amber for MRS data */
+.sc-stat-l{
+  font-size:10px;color:var(--text);font-weight:600;
+  margin-top:3px;text-transform:uppercase;letter-spacing:.6px;
+}
+
+/* ═══ BOTTOM ════════════════════════════════════════════════ */
+.bottom{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+.version-tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:rgba(255,255,255,.18);letter-spacing:.5px;
+}
+
+.logout-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:13px;font-weight:600;color:var(--text);
+  border:1px solid var(--border);border-radius:9px;
+  padding:9px 18px;cursor:pointer;
+  background:none;font-family:'Inter',sans-serif;
+  transition:all .18s;-webkit-tap-highlight-color:transparent;
+}
+.logout-btn:hover{color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.2)}
+
+/* ═══ ANIMATIONS ════════════════════════════════════════════ */
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.fu1{animation:fadeUp .5s .05s both cubic-bezier(.22,1,.36,1)}
+.fu2{animation:fadeUp .5s .12s both cubic-bezier(.22,1,.36,1)}
+.fu3{animation:fadeUp .5s .2s both cubic-bezier(.22,1,.36,1)}
+.fu4{animation:fadeUp .5s .28s both cubic-bezier(.22,1,.36,1)}
+.fu5{animation:fadeUp .5s .36s both cubic-bezier(.22,1,.36,1)}
+
+/* ═══ RESPONSIVE ════════════════════════════════════════════ */
+@media(max-width:600px){
+  body{align-items:flex-start;overflow-y:auto}
+  .wrap{padding:32px 18px calc(32px + env(safe-area-inset-bottom))}
+  .stations{grid-template-columns:1fr}
+  .bottom{flex-direction:column;align-items:center}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-depth"></div>
+
+<div class="wrap">
+
+  <div class="top-logo fu1">
+    <img src="icons/icon.png" alt="MSO Limpid Co. Ltd"/>
+  </div>
+
+  <div class="welcome fu1" id="welcomeMsg">Welcome back</div>
+  <h1 class="fu2">Select a Station</h1>
+  <p class="subtitle fu2">Choose which station you want to manage today</p>
+  <div class="datetime fu3" id="datetime">—</div>
+
+  <div class="stations fu4">
+
+    <!-- ── MSO Limpid ── -->
+    <div class="station-card sc-mso" onclick="goTo('mso')">
+      <div class="sc-arrow">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </div>
+      <div class="sc-badge badge-mso">
+        <span class="live-dot"></span>
+        Live · MSO Station
+      </div>
+      <img src="icons/icon.png" alt="MSO Limpid" class="sc-logo"/>
+      <div class="sc-name">MSO Limpid Co. Ltd</div>
+      <div class="sc-addr">Authorised Mobil Dealer · Lagos</div>
+      <div class="sc-stats">
+        <div class="sc-stat">
+          <div class="sc-stat-n" id="mso-rev">—</div>
+          <div class="sc-stat-l">Today's Revenue</div>
+        </div>
+        <div class="sc-stat">
+          <div class="sc-stat-n" id="mso-vol">—</div>
+          <div class="sc-stat-l">Litres Sold</div>
+        </div>
+        <div class="sc-stat">
+          <div class="sc-stat-n">P1–P6</div>
+          <div class="sc-stat-l">PMS Pumps</div>
+        </div>
+        <div class="sc-stat">
+          <div class="sc-stat-n">TK4 + LPG</div>
+          <div class="sc-stat-l">AGO &amp; Gas</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── M&M Oil & Gas ── -->
+    <div class="station-card sc-mrs" onclick="goTo('mrs')">
+      <div class="sc-arrow">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </div>
+      <div class="sc-badge badge-mrs">
+        <span class="live-dot"></span>
+        Live · MRS Station
+      </div>
+      <img src="icons/icon.png" alt="M&amp;M Oil" class="sc-logo"/>
+      <div class="sc-name">M&amp;M Oil &amp; Gas Ltd</div>
+      <div class="sc-addr">MRS Authorised Station · Lagos</div>
+      <div class="sc-stats">
+        <div class="sc-stat">
+          <div class="sc-stat-n" id="mrs-rev">—</div>
+          <div class="sc-stat-l">Today's Revenue</div>
+        </div>
+        <div class="sc-stat">
+          <div class="sc-stat-n" id="mrs-vol">—</div>
+          <div class="sc-stat-l">Litres Sold</div>
+        </div>
+        <div class="sc-stat">
+          <div class="sc-stat-n">P1–P3</div>
+          <div class="sc-stat-l">PMS Pumps</div>
+        </div>
+        <div class="sc-stat">
+          <div class="sc-stat-n">AP1</div>
+          <div class="sc-stat-l">AGO Pump</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="bottom fu5">
+    <div class="version-tag">v1.0 · Phase 1 of 4 · MSO Digital Operations</div>
+    <button class="logout-btn" onclick="logout()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+      </svg>
+      Sign Out
+    </button>
+  </div>
+
+</div>
+
+<script>
+/* ── Auth guard ── */
+var user = JSON.parse(sessionStorage.getItem('mso_u') || 'null');
+if (!user) window.location.replace('login.html');
+
+/* ── Welcome message ── */
+if (user) {
+  document.getElementById('welcomeMsg').textContent = 'Welcome back, ' + (user.name || user.u);
+}
+
+/* ── DateTime ── */
+function updateTime() {
+  var n = new Date();
+  document.getElementById('datetime').textContent =
+    n.toLocaleDateString('en-NG',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) +
+    '  ·  ' +
+    n.toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit'});
+}
+updateTime(); setInterval(updateTime, 30000);
+
+/* ── Live stats — replace with real API call ── */
+var SCRIPT_URL = 'YOUR_DEPLOYED_WEBAPP_URL';
+if (SCRIPT_URL !== 'YOUR_DEPLOYED_WEBAPP_URL') {
+  fetch(SCRIPT_URL, {
+    method:'POST',
+    body: JSON.stringify({ action:'getStationSummary' })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (d.mso) {
+      document.getElementById('mso-rev').textContent = '₦' + Number(d.mso.revenue).toLocaleString();
+      document.getElementById('mso-vol').textContent = Number(d.mso.litres).toLocaleString() + 'L';
+    }
+    if (d.mrs) {
+      document.getElementById('mrs-rev').textContent = '₦' + Number(d.mrs.revenue).toLocaleString();
+      document.getElementById('mrs-vol').textContent = Number(d.mrs.litres).toLocaleString() + 'L';
+    }
+  })
+  .catch(function(){});
+} else {
+  /* Placeholder until API is live */
+  document.getElementById('mso-rev').textContent = '₦—';
+  document.getElementById('mso-vol').textContent = '—';
+  document.getElementById('mrs-rev').textContent = '₦—';
+  document.getElementById('mrs-vol').textContent = '—';
+}
+
+/* ── Navigate ── */
+function goTo(station) {
+  if (user) {
+    user.station = station;
+    sessionStorage.setItem('mso_u', JSON.stringify(user));
+  }
+  window.location.href = 'dashboard-' + station + '.html';
+}
+
+/* ── Logout ── */
+function logout() {
+  sessionStorage.clear();
+  window.location.replace('login.html');
+}
+
+/* ── SW ── */
+/* SW registered by pwa-core.js */);
+}
+</script>
+
+<script src="/js/pwa-core.js"></script>
+</body>
+</html>

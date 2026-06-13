@@ -1,0 +1,107 @@
+{
+  "name": "MSO Digital Operations",
+  "short_name": "MSO Portal",
+  "description": "Real-time petroleum station operations platform for MSO Limpid Co. Ltd and M&M Oil & Gas Ltd — fuel sales, tank management, cash reconciliation and financial reporting.",
+  "start_url": "/index.html?source=pwa",
+  "scope": "/",
+  "id": "mso-digital-operations-v1",
+  "display": "standalone",
+  "display_fallback": ["minimal-ui", "browser"],
+  "orientation": "portrait-primary",
+  "background_color": "#0A0D1A",
+  "theme_color": "#130656",
+  "lang": "en-NG",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "finance"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Record Sales",
+      "short_name": "Sales",
+      "description": "Record fuel sales — Tank, Pump, Nozzle, Metres",
+      "url": "/sales-mso.html?source=shortcut",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Tank Dip",
+      "short_name": "Dip",
+      "description": "Record morning or evening tank dip readings",
+      "url": "/dip-mso.html?source=shortcut",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "MSO Dashboard",
+      "short_name": "Dashboard",
+      "description": "MSO Limpid live operations dashboard",
+      "url": "/dashboard-mso.html?source=shortcut",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Cash Reconciliation",
+      "short_name": "Cash Up",
+      "description": "End-of-day cash reconciliation",
+      "url": "/cashup-mso.html?source=shortcut",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "icons/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "MSO Portal — Dashboard on Mobile"
+    },
+    {
+      "src": "icons/screenshot-desktop.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "MSO Portal — Dashboard on Desktop"
+    }
+  ]
+}

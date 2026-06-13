@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0A0D1A"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icons/icon.png"/>
+<title>Sign In — MSO Digital Operations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+<style>
+
+/* ═══ RESET ═════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
+button,input{font-family:inherit}
+input:focus{outline:none}
+input::placeholder{color:#94A3B8}
+
+/* ═══ TOKENS ════════════════════════════════════════════════ */
+:root{
+  --c:#179DD0;--cd:#1188B5;--cl:#EAF6FC;
+  --n:#130656;--n2:rgba(19,6,86,.92);
+  --ink:#0F172A;--ink3:#64748B;
+  --border:#E2E8F0;
+  --g:#22C55E;--r:#DC2626;--rb:#FEF2F2;--rbr:#FECACA;
+}
+
+/* ═══ PAGE ══════════════════════════════════════════════════ */
+.page{display:grid;grid-template-columns:1.2fr 1fr;height:100vh;overflow:hidden}
+
+/* ═══════════════════════════════════════════════════════════
+   LEFT — FULL-BLEED PHOTO PANEL
+═══════════════════════════════════════════════════════════ */
+.left{position:relative;overflow:hidden}
+
+/* The photo — full bleed, subtly desaturated */
+.left-photo{
+  position:absolute;inset:0;
+  background-image:url('https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=1200&q=90&fit=crop');
+  background-size:cover;background-position:center;
+  filter:brightness(.55) saturate(.7);
+  transition:transform .6s ease;
+}
+.left:hover .left-photo{transform:scale(1.02)}
+
+/* Brand navy gradient — not blue, not generic */
+.left-ov{
+  position:absolute;inset:0;
+  background:linear-gradient(
+    155deg,
+    rgba(19,6,86,.75) 0%,
+    rgba(19,6,86,.35) 45%,
+    rgba(5,2,25,.65) 100%
+  );
+}
+/* Cyan brand accent line — left edge */
+.left-accent{
+  position:absolute;top:0;left:0;bottom:0;
+  width:3px;background:var(--c);z-index:3;
+}
+
+/* Content layered above photo */
+.left-content{
+  position:absolute;inset:0;z-index:2;
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:44px 48px;
+}
+
+/* Wordmark */
+.wm{display:flex;align-items:center;gap:12px}
+.wm-logo{
+  width:40px;height:40px;border-radius:11px;
+  background:rgba(255,255,255,.9);padding:4px;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.3);
+}
+.wm-logo img{width:100%;display:block}
+.wm-name{font-size:14px;font-weight:700;color:#fff;letter-spacing:-.01em;line-height:1.2}
+.wm-sub{font-size:9px;color:rgba(255,255,255,.38);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px}
+
+/* Mid: headline */
+.left-mid{}
+.lm-tag{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:10.5px;font-weight:700;color:var(--c);
+  text-transform:uppercase;letter-spacing:1.5px;margin-bottom:18px;
+}
+.lm-tag::before{
+  content:'';width:20px;height:2px;background:var(--c);
+  border-radius:2px;flex-shrink:0;
+}
+.lm-h{
+  font-size:clamp(2rem,3vw,3rem);font-weight:900;
+  color:#fff;line-height:.98;letter-spacing:-.05em;
+  margin-bottom:14px;
+}
+.lm-h .accent{color:var(--c)} /* solid — no gradient */
+.lm-p{
+  font-size:14px;color:rgba(255,255,255,.42);
+  line-height:1.75;max-width:320px;
+}
+
+/* Bottom photo overlay cards */
+.left-photos{
+  display:grid;grid-template-columns:1.4fr 1fr;gap:10px;
+}
+.photo-card{
+  border-radius:14px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.1);
+  position:relative;cursor:default;
+}
+.pc-img{
+  width:100%;height:100%;object-fit:cover;
+  filter:brightness(.55) saturate(.65);
+  display:block;transition:transform .5s ease;
+}
+.photo-card:hover .pc-img{transform:scale(1.05)}
+.photo-card-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(10,5,40,.85) 0%,transparent 55%);
+}
+/* Brand-specific overlays */
+.pc-mso{background:rgba(23,157,208,.08)} /* cyan tint */
+.pc-mrs{background:rgba(180,83,9,.06)}   /* warm tint */
+.pc-info{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:12px 14px;z-index:1;
+}
+.pc-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--g);
+  box-shadow:0 0 7px rgba(34,197,94,.8);
+  display:inline-block;margin-right:6px;vertical-align:middle;
+  animation:blink 2.2s ease-in-out infinite;
+}
+.pc-mrs .pc-dot{animation-delay:.7s}
+.pc-name{font-size:12.5px;font-weight:700;color:#fff;line-height:1.3}
+.pc-meta{font-size:10.5px;color:rgba(255,255,255,.45);margin-top:2px}
+.pc-badge{
+  display:inline-block;font-size:9.5px;font-weight:700;
+  border-radius:99px;padding:2px 9px;margin-top:6px;
+}
+.pc-mso .pc-badge{background:rgba(23,157,208,.25);color:var(--c)}
+.pc-mrs .pc-badge{background:rgba(245,158,11,.22);color:#F59E0B}
+
+/* Trust row */
+.trust{
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  padding-top:16px;border-top:1px solid rgba(255,255,255,.07);
+}
+.trust-item{display:flex;align-items:center;gap:6px}
+.trust-txt{
+  font-size:10px;color:rgba(255,255,255,.22);
+  font-family:'JetBrains Mono',monospace;letter-spacing:.2px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RIGHT — FORM PANEL
+═══════════════════════════════════════════════════════════ */
+.right{
+  background:#fff;display:flex;
+  align-items:center;justify-content:center;
+  padding:48px 44px;
+  position:relative;overflow-y:auto;
+}
+/* Cyan top strip */
+.right::before{
+  content:'';position:absolute;top:0;left:0;right:0;
+  height:2.5px;background:var(--c);
+}
+.form-wrap{width:100%;max-width:340px}
+
+/* Logo row */
+.f-logo{display:flex;align-items:center;gap:10px;margin-bottom:36px}
+.f-logo img{
+  width:34px;height:34px;border-radius:9px;
+  border:1.5px solid var(--border);padding:3px;object-fit:contain;
+}
+.f-logo-name{font-size:13px;font-weight:700;color:var(--ink);line-height:1.2}
+.f-logo-sub{font-size:11px;color:#94A3B8;margin-top:1px}
+
+/* Station selector tabs */
+.stn-tabs{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:8px;margin-bottom:26px;
+  background:#F8FAFC;border:1.5px solid var(--border);
+  border-radius:12px;padding:4px;
+}
+.stn-tab{
+  border-radius:9px;padding:10px 12px;cursor:pointer;
+  text-align:center;transition:all .18s;border:1.5px solid transparent;
+}
+.stn-tab-name{font-size:12.5px;font-weight:700;color:var(--ink3);line-height:1.3;margin-bottom:2px}
+.stn-tab-brand{font-size:10px;font-weight:600;color:#94A3B8}
+.stn-tab.on{
+  background:#fff;border-color:var(--border);
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+}
+.stn-tab.on .stn-tab-name{color:var(--ink)}
+
+/* Headings */
+.f-h{font-size:25px;font-weight:800;color:var(--ink);letter-spacing:-.04em;margin-bottom:7px}
+.f-sub{font-size:13.5px;color:var(--ink3);line-height:1.65;margin-bottom:28px}
+
+/* Error */
+.f-err{
+  display:flex;align-items:flex-start;gap:9px;
+  padding:11px 13px;border-radius:10px;
+  background:var(--rb);border:1px solid var(--rbr);margin-bottom:16px;
+}
+.f-err-txt{font-size:12.5px;color:var(--r);font-weight:500;line-height:1.5}
+
+/* Fields */
+.f-field{margin-bottom:15px}
+.f-lbl{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;font-weight:700;color:#374151;
+  letter-spacing:.9px;margin-bottom:7px;text-transform:uppercase;
+}
+.f-lbl a{font-size:11px;font-weight:500;text-transform:none;letter-spacing:0;color:var(--c);text-decoration:none}
+.f-lbl a:hover{color:var(--cd)}
+.f-wrap{position:relative}
+.f-icon{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  width:16px;height:16px;pointer-events:none;transition:color .18s;color:#94A3B8;
+}
+.f-input{
+  width:100%;height:50px;border-radius:12px;
+  padding:0 14px 0 45px;font-size:14.5px;font-weight:500;
+  color:var(--ink);background:#F8FAFC;
+  border:1.5px solid var(--border);
+  transition:border-color .18s,background .18s,box-shadow .18s;
+  -webkit-appearance:none;
+}
+.f-input:hover{border-color:#CBD5E1}
+.f-input:focus{background:#fff;border-color:var(--c);box-shadow:0 0 0 3px rgba(23,157,208,.1)}
+.f-input.err{background:#FFF5F5;border-color:#FCA5A5}
+.f-input:focus + .f-icon-abs, /* not used */ .f-wrap:focus-within .f-icon{color:var(--c)}
+
+/* PW toggle */
+.f-eye{
+  position:absolute;right:13px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;padding:5px;
+  color:#94A3B8;transition:color .15s;
+}
+.f-eye:hover{color:#475569}
+
+/* Submit button */
+.f-btn{
+  width:100%;height:52px;margin-top:6px;border:none;border-radius:13px;
+  cursor:pointer;font-size:15px;font-weight:800;color:#fff;
+  background:var(--c);
+  box-shadow:0 1px 3px rgba(0,0,0,.1),0 8px 24px rgba(23,157,208,.3);
+  display:flex;align-items:center;justify-content:center;gap:11px;
+  position:relative;overflow:hidden;
+  transition:background .18s,transform .18s,box-shadow .18s;
+}
+.f-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(155deg,rgba(255,255,255,.14) 0%,transparent 50%);
+  pointer-events:none;
+}
+.f-btn:hover:not(:disabled){
+  background:var(--cd);transform:translateY(-1px);
+  box-shadow:0 2px 4px rgba(0,0,0,.1),0 14px 32px rgba(23,157,208,.38);
+}
+.f-btn:active:not(:disabled){transform:translateY(0);box-shadow:0 2px 8px rgba(23,157,208,.2)}
+.f-btn:disabled{opacity:.55;cursor:wait;transform:none}
+.btn-arr{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;transition:transform .18s;
+}
+.f-btn:hover:not(:disabled) .btn-arr{transform:translateX(2px)}
+.spinner{
+  width:20px;height:20px;
+  border:2.5px solid rgba(255,255,255,.25);border-top-color:#fff;
+  border-radius:50%;position:absolute;animation:spin .6s linear infinite;
+}
+
+/* Success state */
+.f-success{
+  display:flex;align-items:center;gap:9px;
+  margin-top:14px;font-size:13px;font-weight:600;color:#059669;
+}
+
+/* Footer */
+.f-foot{
+  display:flex;align-items:center;gap:7px;margin-top:26px;
+  padding-top:20px;border-top:1px solid #F1F5F9;
+}
+.f-foot span{font-size:11px;color:#94A3B8}
+.back-link{
+  display:flex;align-items:center;gap:6px;margin-top:14px;
+  font-size:12.5px;color:#94A3B8;cursor:pointer;transition:color .14s;
+  width:fit-content;text-decoration:none;
+}
+.back-link:hover{color:var(--ink3)}
+
+/* ═══ ANIMATIONS ════════════════════════════════════════════ */
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes slideLeft{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
+@keyframes slideRight{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.sl1{animation:slideLeft .6s .04s both cubic-bezier(.22,1,.36,1)}
+.sl2{animation:slideLeft .6s .12s both cubic-bezier(.22,1,.36,1)}
+.sl3{animation:slideLeft .6s .2s both cubic-bezier(.22,1,.36,1)}
+.sl4{animation:slideLeft .6s .28s both cubic-bezier(.22,1,.36,1)}
+.sl5{animation:slideLeft .6s .36s both cubic-bezier(.22,1,.36,1)}
+.sr1{animation:slideRight .6s .06s both cubic-bezier(.22,1,.36,1)}
+.sr2{animation:slideRight .6s .14s both cubic-bezier(.22,1,.36,1)}
+.sr3{animation:slideRight .6s .22s both cubic-bezier(.22,1,.36,1)}
+.sr4{animation:slideRight .6s .3s both cubic-bezier(.22,1,.36,1)}
+.sr5{animation:slideRight .6s .38s both cubic-bezier(.22,1,.36,1)}
+
+/* ═══ RESPONSIVE ════════════════════════════════════════════ */
+@media(max-width:900px){
+  html,body{height:auto;overflow-y:auto}
+  .page{grid-template-columns:1fr;height:auto;min-height:100vh}
+
+  /* Mobile: Left panel is compact header */
+  .left{
+    order:1;
+    height:52vw;min-height:220px;max-height:320px;
+  }
+  .left-content{padding:22px 22px 20px}
+  .lm-tag{margin-bottom:10px;font-size:10px}
+  .lm-h{font-size:2.1rem}
+  .lm-p{display:none}
+  .left-photos{grid-template-columns:1fr 1fr}
+  .photo-card{height:90px}
+  .trust{display:none}
+
+  /* Mobile: right panel */
+  .right{order:2;padding:28px 22px calc(40px + env(safe-area-inset-bottom));align-items:flex-start}
+  .form-wrap{max-width:100%}
+  .f-logo{margin-bottom:22px}
+}
+
+@media(max-width:480px){
+  .left{height:45vw;min-height:180px}
+  .lm-h{font-size:1.75rem}
+}
+</style>
+</head>
+<body>
+<div class="page" x-data="app()" x-init="boot()">
+
+  <!-- ══ LEFT — PHOTO PANEL ════════════════════════════════ -->
+  <div class="left">
+    <!-- Full-bleed background photo -->
+    <div class="left-photo"></div>
+    <div class="left-ov"></div>
+    <div class="left-accent"></div>
+
+    <div class="left-content">
+
+      <!-- Wordmark -->
+      <div class="wm sl1">
+        <div class="wm-logo"><img src="icons/icon.png" alt="MSO"/></div>
+        <div>
+          <div class="wm-name">MSO Digital Operations</div>
+          <div class="wm-sub">by Idowu Egba · Lagos</div>
+        </div>
+      </div>
+
+      <!-- Headline -->
+      <div class="sl2">
+        <div class="lm-tag">Staff &amp; Owner Access</div>
+        <h1 class="lm-h">
+          Every litre.<br/>
+          Every naira.<br/>
+          <span class="accent">Accounted.</span>
+        </h1>
+        <p class="lm-p">
+          Complete digital operations for MSO Limpid Co. Ltd
+          and M&amp;M Oil &amp; Gas — remote visibility from anywhere in Lagos.
+        </p>
+      </div>
+
+      <!-- Embedded station photo cards -->
+      <div class="sl3">
+        <div class="left-photos">
+
+          <!-- MSO station card -->
+          <div class="photo-card pc-mso">
+            <img
+              class="pc-img"
+              src="https://images.unsplash.com/photo-1562240020-ce31ccb0fa7f?w=600&q=80&fit=crop"
+              alt="MSO Limpid Station"
+            />
+            <div class="photo-card-overlay"></div>
+            <div class="pc-info">
+              <div><span class="pc-dot"></span></div>
+              <div class="pc-name">MSO Limpid<br/>Co. Ltd</div>
+              <div class="pc-meta">Authorised Mobil Dealer</div>
+              <div class="pc-badge">Mobil</div>
+            </div>
+          </div>
+
+          <!-- MRS station card -->
+          <div class="photo-card pc-mrs">
+            <img
+              class="pc-img"
+              src="https://images.unsplash.com/photo-1611735341450-74d61e660ad2?w=600&q=80&fit=crop"
+              alt="M&M Oil and Gas"
+            />
+            <div class="photo-card-overlay"></div>
+            <div class="pc-info">
+              <div><span class="pc-dot"></span></div>
+              <div class="pc-name">M&amp;M Oil &amp;<br/>Gas Ltd</div>
+              <div class="pc-meta">MRS Station · Lagos</div>
+              <div class="pc-badge">MRS</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Trust row -->
+        <div class="trust" style="margin-top:14px">
+          <div class="trust-item">
+            <svg width="11" height="11" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span class="trust-txt">Secured · Apps Script</span>
+          </div>
+          <div class="trust-item">
+            <svg width="11" height="11" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2" viewBox="0 0 24 24">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            <span class="trust-txt">v1.0 · Phase 1 of 4</span>
+          </div>
+          <div class="trust-item">
+            <svg width="11" height="11" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span class="trust-txt">20-year storage</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ RIGHT — FORM PANEL ════════════════════════════════ -->
+  <div class="right">
+    <div class="form-wrap">
+
+      <!-- Logo -->
+      <div class="f-logo sr1">
+        <img src="icons/icon.png" alt="MSO"/>
+        <div>
+          <div class="f-logo-name">MSO Digital Operations</div>
+          <div class="f-logo-sub">Staff &amp; Owner Portal</div>
+        </div>
+      </div>
+
+      <!-- Station tabs -->
+      <div class="sr2">
+        <div class="stn-tabs">
+          <div class="stn-tab on" id="tab-mso" onclick="selectTab('mso')">
+            <div class="stn-tab-name">MSO Limpid</div>
+            <div class="stn-tab-brand" style="color:var(--c)">Mobil ⛽</div>
+          </div>
+          <div class="stn-tab" id="tab-mrs" onclick="selectTab('mrs')">
+            <div class="stn-tab-name">M&amp;M Oil &amp; Gas</div>
+            <div class="stn-tab-brand" style="color:#F59E0B">MRS 🏪</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Headings -->
+      <div class="sr2">
+        <h2 class="f-h">Sign in</h2>
+        <p class="f-sub">Enter your credentials — we route you to the right dashboard automatically.</p>
+      </div>
+
+      <!-- Error -->
+      <div x-show="err"
+           x-transition:enter="transition ease-out duration-200"
+           x-transition:enter-start="opacity-0 -translate-y-1"
+           x-transition:enter-end="opacity-100 translate-y-0"
+           class="f-err">
+        <svg width="14" height="14" fill="none" stroke="#DC2626" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span class="f-err-txt" x-text="err"></span>
+      </div>
+
+      <!-- Username -->
+      <div class="f-field sr3">
+        <div class="f-lbl"><span>Username</span></div>
+        <div class="f-wrap">
+          <svg class="f-icon" :style="foc==='u'?'color:var(--c)':''"
+               fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+          </svg>
+          <input x-model="uname"
+                 @focus="foc='u';err=''" @blur="foc=''"
+                 @keydown.enter="go()"
+                 :class="err?'f-input err':'f-input'"
+                 type="text" placeholder="Your username"
+                 autocomplete="username" autocapitalize="off"
+                 autocorrect="off" spellcheck="false"/>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="f-field sr3">
+        <div class="f-lbl">
+          <span>Password</span>
+          <a href="#" @click.prevent>Forgot password?</a>
+        </div>
+        <div class="f-wrap">
+          <svg class="f-icon" :style="foc==='p'?'color:var(--c)':''"
+               fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <input x-model="pw"
+                 @focus="foc='p';err=''" @blur="foc=''"
+                 @keydown.enter="go()"
+                 :class="err?'f-input err':'f-input'"
+                 :type="showpw?'text':'password'"
+                 placeholder="Your password"
+                 autocomplete="current-password"/>
+          <button class="f-eye" type="button" @click="showpw=!showpw" tabindex="-1">
+            <template x-if="!showpw">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </template>
+            <template x-if="showpw">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+                <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </template>
+          </button>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button class="f-btn sr4" type="button" @click="go()"
+              @mouseenter="hov=true" @mouseleave="hov=false" :disabled="loading">
+        <div x-show="loading" class="spinner"></div>
+        <template x-if="!loading"><span>Continue</span></template>
+        <template x-if="!loading">
+          <div class="btn-arr" :style="hov?'transform:translateX(2px)':''">→</div>
+        </template>
+      </button>
+
+      <!-- Success -->
+      <div x-show="ok" x-transition class="f-success">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span x-text="msg"></span>
+      </div>
+
+      <!-- Footer -->
+      <div class="f-foot sr5">
+        <svg width="12" height="12" fill="none" stroke="#CBD5E1" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>Secured · Google Apps Script · All activity logged</span>
+      </div>
+
+      <a class="back-link" href="index.html">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Back to portal home
+      </a>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ── Users DB ── */
+const DB = {
+  'owner':    { pw:'owner123',   name:'Admin',        has:['mso','mrs'], pick:true  },
+  'gm.mso':  { pw:'gm2025',     name:'MSO Manager',  has:['mso'],       pick:false },
+  'gm.mrs':  { pw:'gmm2025',    name:'MRS Manager',  has:['mrs'],       pick:false },
+  'harrison':{ pw:'harrison01', name:'Harrison',      has:['mso'],       pick:false },
+  'tony':    { pw:'tony01',     name:'Tony',          has:['mso'],       pick:false },
+  'wale':    { pw:'wale01',     name:'Wale',          has:['mrs'],       pick:false },
+  'paul':    { pw:'paul01',     name:'Paul',          has:['mrs'],       pick:false },
+  'tobi':    { pw:'tobi01',     name:'Tobi',          has:['mso'],       pick:false },
+  'joseph':  { pw:'joseph01',   name:'Joseph',        has:['mso'],       pick:false },
+};
+
+/* ── Station tab toggle ── */
+var selStation = 'mso';
+function selectTab(s) {
+  selStation = s;
+  document.getElementById('tab-mso').classList.toggle('on', s === 'mso');
+  document.getElementById('tab-mrs').classList.toggle('on', s === 'mrs');
+}
+
+/* ── Pre-select from URL ── */
+(function(){
+  var p = new URLSearchParams(window.location.search).get('station');
+  if (p === 'mrs') selectTab('mrs');
+})();
+
+/* ── Alpine app ── */
+function app() {
+  return {
+    uname:'', pw:'', showpw:false, foc:'',
+    err:'', loading:false, hov:false, ok:false, msg:'',
+    boot() {
+      try {
+        var s = JSON.parse(sessionStorage.getItem('mso_u') || 'null');
+        if (s) this.route(s);
+      } catch(_) {}
+      if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+    },
+    async go() {
+      this.err = '';
+      const u = this.uname.trim().toLowerCase();
+      const p = this.pw;
+      if (!u) { this.err = 'Please enter your username.'; return; }
+      if (!p) { this.err = 'Please enter your password.'; return; }
+      const r = DB[u];
+      if (!r || r.pw !== p) { this.err = 'Incorrect username or password.'; return; }
+      this.loading = true;
+      await new Promise(x => setTimeout(x, 900));
+      this.loading = false;
+      const role    = r.pick ? 'owner' : (u.startsWith('gm') ? 'gm' : 'supervisor');
+      const station = r.pick ? null : r.has[0];
+      sessionStorage.setItem('mso_u', JSON.stringify({
+        u, name:r.name, role, has:r.has, pick:r.pick, station
+      }));
+      this.ok = true;
+      this.msg = r.pick
+        ? 'Authenticated — opening station selector…'
+        : 'Authenticated — loading ' + r.has[0].toUpperCase() + ' dashboard…';
+      setTimeout(() => this.route({ pick:r.pick, has:r.has, station }), 1200);
+    },
+    route(s) {
+      window.location.href = (s.pick || !s.station)
+        ? 'select.html'
+        : 'dashboard-' + s.station + '.html';
+    }
+  };
+}
+</script>
+
+<script src="/js/pwa-core.js"></script>
+</body>
+</html>

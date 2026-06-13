@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#080B1A"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="MSO Portal"/>
+<meta name="description" content="MSO Digital Operations — Staff portal for MSO Limpid Co. Ltd and M&M Oil & Gas Ltd"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Syne:wght@700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet"/>
+<title>MSO Digital Operations</title>
+<style>
+
+/* ── RESET ─────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{
+  font-family:'Inter',sans-serif;background:#080B1A;color:#fff;
+  -webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none
+}
+
+/* ── SHELL ─────────────────────────────────────────────────── */
+.shell{
+  position:relative;width:100%;height:100vh;overflow:hidden;
+  padding-top:env(safe-area-inset-top);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SLIDES
+══════════════════════════════════════════════════════════════ */
+.slides{position:absolute;inset:0;z-index:0}
+
+.slide{
+  position:absolute;inset:0;
+  opacity:0;transition:opacity 1.2s cubic-bezier(.4,0,.2,1);
+  pointer-events:none;
+}
+.slide.active{opacity:1;pointer-events:auto}
+
+.slide-photo{
+  position:absolute;inset:0;background-size:cover;background-position:center;
+  transform:scale(1.08);
+  transition:transform 7s ease-out;
+  will-change:transform;
+  filter:brightness(.92) saturate(1.05);
+}
+.slide.active .slide-photo{transform:scale(1)}
+
+.slide:nth-child(1) .slide-photo{background-image:url('images/KM14.jpeg')}
+.slide:nth-child(2) .slide-photo{background-image:url('images/KM14.jpeg')}
+.slide:nth-child(3) .slide-photo{background-image:url('images/KM1_1074 copy.jpg.jpeg')}
+
+/* ── OVERLAYS ─────────────────────────────────────────────── */
+.overlay-always{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    radial-gradient(ellipse 75% 50% at 12% 82%, rgba(23,157,208,.12) 0%, transparent 52%),
+    linear-gradient(to bottom,
+      rgba(5,7,18,.88) 0%,
+      rgba(5,7,18,.16) 33%,
+      rgba(5,7,18,.06) 50%,
+      rgba(5,7,18,.68) 72%,
+      rgba(5,7,18,.98) 100%
+    );
+}
+
+/* Dedicated scrim anchored to the hero text area */
+.slide-content::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to top,
+    rgba(5,7,18,.78) 0%,
+    rgba(5,7,18,.5) 26%,
+    rgba(5,7,18,.14) 52%,
+    transparent 100%
+  );
+  pointer-events:none;z-index:-1;
+}
+
+.slide:nth-child(1) .slide-photo::after{
+  content:'';position:absolute;inset:0;
+  background:
+    linear-gradient(140deg,rgba(10,3,55,.62) 0%,transparent 56%),
+    linear-gradient(to bottom,transparent 42%,rgba(5,7,18,.28) 100%);
+}
+.slide:nth-child(2) .slide-photo::after{
+  content:'';position:absolute;inset:0;
+  background:
+    linear-gradient(160deg,rgba(10,3,55,.55) 0%,transparent 56%),
+    linear-gradient(to bottom,transparent 42%,rgba(5,7,18,.28) 100%);
+}
+.slide:nth-child(3) .slide-photo::after{
+  content:'';position:absolute;inset:0;
+  background:
+    linear-gradient(120deg,rgba(23,157,208,.15) 0%,rgba(10,3,55,.58) 100%),
+    linear-gradient(to bottom,transparent 42%,rgba(5,7,18,.28) 100%);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   STORY-STYLE SEGMENTED PROGRESS (top)
+══════════════════════════════════════════════════════════════ */
+.seg-progress{
+  position:absolute;
+  top:env(safe-area-inset-top);left:0;right:0;
+  z-index:25;
+  display:flex;gap:4px;
+  padding:10px 14px 0;
+}
+.seg{
+  flex:1;height:2px;border-radius:99px;
+  background:rgba(255, 255, 255, 0.2);
+  overflow:hidden;position:relative;
+}
+.seg-fill{
+  position:absolute;left:0;top:0;bottom:0;
+  width:0%;
+  background:linear-gradient(90deg,#179DD0,#6DE0FF);
+  border-radius:99px;
+  will-change:width;
+}
+.seg.done .seg-fill{width:100%}
+
+/* ══════════════════════════════════════════════════════════════
+   TOPBAR
+══════════════════════════════════════════════════════════════ */
+.topbar{
+  position:absolute;top:env(safe-area-inset-top);left:0;right:0;
+  z-index:20;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:26px 18px 14px;
+}
+
+.tb-brand{display:flex;align-items:center;gap:11px}
+
+.tb-logo{
+  width:40px;height:40px;border-radius:11px;overflow:hidden;
+  background:rgba(255,255,255,.95);padding:3px;
+  box-shadow:0 2px 18px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.12);
+  flex-shrink:0;
+}
+.tb-logo img{width:100%;height:100%;display:block;object-fit:contain}
+
+.tb-text{display:flex;flex-direction:column}
+.tb-name{font-size:14.5px;font-weight:800;color:#fff;letter-spacing:-.025em;line-height:1.15}
+.tb-tag{
+  font-size:8.5px;color:rgba(255,255,255,.36);
+  letter-spacing:.65px;text-transform:uppercase;margin-top:2px;font-weight:600
+}
+
+.tb-signin{
+  font-size:13px;font-weight:700;
+  color:rgba(255,255,255,.85);
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(16px) saturate(180%);
+  -webkit-backdrop-filter:blur(16px) saturate(180%);
+  border-radius:99px;padding:8px 17px;
+  text-decoration:none;
+  transition:all .22s cubic-bezier(.22,1,.36,1);
+  display:flex;align-items:center;gap:6px;
+  letter-spacing:.01em;
+}
+.tb-signin .arrow{font-size:11px;transition:transform .2s}
+.tb-signin:hover{
+  background:rgba(255,255,255,.18);color:#fff;
+  border-color:rgba(255,255,255,.28);
+}
+.tb-signin:hover .arrow{transform:translateX(3px)}
+.tb-signin:active{transform:scale(.95)}
+
+/* ══════════════════════════════════════════════════════════════
+   SLIDE CONTENT
+══════════════════════════════════════════════════════════════ */
+.slide-content{
+  position:absolute;inset:0;z-index:5;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:0 26px;
+  padding-bottom:calc(300px + env(safe-area-inset-bottom));
+}
+
+.sc-inner{
+  opacity:0;transform:translateY(24px);
+  transition:opacity .7s .1s ease, transform .7s .1s cubic-bezier(.22,1,.36,1);
+}
+.slide.active .sc-inner{opacity:1;transform:translateY(0)}
+
+.sc-eyebrow{
+  display:flex;align-items:center;gap:10px;margin-bottom:12px;
+}
+.sc-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;font-weight:600;
+  color:rgba(255,255,255,.32);letter-spacing:2.5px;
+}
+.sc-rule{
+  width:26px;height:1px;
+  background:linear-gradient(90deg,rgba(23,157,208,.7),transparent);
+  border-radius:99px;
+}
+
+.sc-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(23,157,208,.1);
+  border:1px solid rgba(23,157,208,.22);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border-radius:99px;padding:5px 14px 5px 10px;
+  font-size:11.5px;font-weight:700;
+  color:rgba(100,220,255,.9);
+  letter-spacing:.05px;margin-bottom:16px;width:fit-content;
+}
+.sc-dot{width:7px;height:7px;border-radius:50%;background:#22C55E;flex-shrink:0}
+
+.sc-h{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(38px,10.5vw,62px);
+  font-weight:800;color:#fff;
+  line-height:.96;letter-spacing:-.048em;
+  margin-bottom:16px;
+  text-shadow:0 2px 4px rgba(0,0,0,.65), 0 8px 40px rgba(0,0,0,.5);
+}
+.sc-h .accent{
+  background:linear-gradient(135deg,#20B4E8 0%,#6DE0FF 100%);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:#6de0ff;color:#6de0ff;
+}
+
+.sc-p{
+  font-size:15px;color:rgba(255,255,255,.48);
+  line-height:1.78;max-width:310px;font-weight:400;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ACTION PANEL
+══════════════════════════════════════════════════════════════ */
+.action-panel{
+  position:absolute;bottom:0;left:0;right:0;z-index:10;
+  padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top,
+    rgba(6,8,20,.99) 0%,
+    rgba(6,8,20,.97) 50%,
+    rgba(6,8,20,.82) 74%,
+    rgba(6,8,20,.42) 88%,
+    transparent 100%
+  );
+}
+
+/* ── Dots ──────────────────────────────────────────────────── */
+.dots{display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:16px}
+.dot{
+  height:3px;border-radius:99px;
+  background:rgba(255,255,255,.18);
+  transition:all .38s cubic-bezier(.22,1,.36,1);
+  cursor:pointer;width:20px;
+}
+.dot.on{
+  background:linear-gradient(90deg,#179DD0,#50D0F5);
+  width:32px;
+  box-shadow:0 0 10px rgba(23,157,208,.55);
+}
+.dot:hover:not(.on){background:rgba(255,255,255,.32)}
+
+/* ── STATION CARDS ─────────────────────────────────────────── */
+.station-cards{display:flex;flex-direction:column;gap:10px}
+
+.stn-card{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 18px;border-radius:18px;
+  text-decoration:none;cursor:pointer;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  backdrop-filter:blur(16px) saturate(160%);
+  -webkit-backdrop-filter:blur(16px) saturate(160%);
+  position:relative;overflow:hidden;
+  transition:all .24s cubic-bezier(.22,1,.36,1);
+}
+.stn-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(110deg,transparent 28%,rgba(255,255,255,.09) 50%,transparent 72%);
+  transform:translateX(-120%);transition:transform .7s ease;pointer-events:none;
+}
+.stn-card:hover::before{transform:translateX(120%)}
+.stn-card:hover{transform:translateY(-2px)}
+.stn-card:active{transform:scale(.97);transition-duration:.1s}
+
+.mso-card{border-color:rgba(23,157,208,.28)}
+.mrs-card{border-color:rgba(245,158,11,.22)}
+.mso-card:hover{
+  background:rgba(23,157,208,.1);
+  border-color:rgba(23,157,208,.55);
+  box-shadow:0 8px 32px rgba(23,157,208,.22);
+}
+.mrs-card:hover{
+  background:rgba(245,158,11,.08);
+  border-color:rgba(245,158,11,.45);
+  box-shadow:0 8px 32px rgba(245,158,11,.18);
+}
+
+.stn-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.mso-dot{background:#179DD0;box-shadow:0 0 10px rgba(23,157,208,.9)}
+.mrs-dot{background:#F59E0B;box-shadow:0 0 10px rgba(245,158,11,.9)}
+
+.stn-info{flex:1;min-width:0}
+.stn-name{font-size:15px;font-weight:800;color:#fff;letter-spacing:-.03em;line-height:1.2}
+.stn-sub{font-size:10.5px;color:rgba(255,255,255,.36);font-weight:600;margin-top:3px;letter-spacing:.1px}
+
+.stn-chevron{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:rgba(255,255,255,.4);
+  background:rgba(255,255,255,.08);
+  transition:all .24s cubic-bezier(.22,1,.36,1);
+}
+.mso-card:hover .stn-chevron{background:rgba(23,157,208,.28);color:#fff;transform:translateX(3px)}
+.mrs-card:hover .stn-chevron{background:rgba(245,158,11,.24);color:#fff;transform:translateX(3px)}
+
+/* General login — divider-style text link */
+.btn-general{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;margin-top:13px;padding:5px;
+  font-size:12px;font-weight:700;letter-spacing:.2px;
+  color:rgba(255,255,255,.28);
+  background:none;border:none;cursor:pointer;
+  font-family:'Inter',sans-serif;text-decoration:none;
+  transition:color .18s;
+}
+.btn-general::before,.btn-general::after{
+  content:'';flex:1;height:1px;background:rgba(255,255,255,.08);
+}
+.btn-general:hover{color:rgba(255,255,255,.62)}
+
+/* ── Install Strip ─────────────────────────────────────────── */
+.install-strip{
+  display:none;align-items:center;gap:12px;
+  background:rgba(23,157,208,.09);
+  border:1px solid rgba(23,157,208,.2);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-radius:14px;padding:12px 14px;margin-bottom:14px;
+}
+.install-strip.show{display:flex}
+.is-ico{font-size:22px;flex-shrink:0}
+.is-txt{flex:1;font-size:12.5px;font-weight:700;color:rgba(255,255,255,.9);line-height:1.2}
+.is-sub{font-size:11px;color:rgba(255,255,255,.38);margin-top:2.5px;font-weight:500}
+.is-btn{
+  background:linear-gradient(135deg,#179DD0,#22B5E8);
+  color:#fff;border:none;border-radius:10px;
+  padding:8px 16px;font-size:12px;font-weight:800;cursor:pointer;
+  font-family:'Inter',sans-serif;white-space:nowrap;flex-shrink:0;
+  box-shadow:0 2px 14px rgba(23,157,208,.42);
+  transition:all .18s;
+}
+.is-btn:hover{transform:scale(1.04);box-shadow:0 4px 18px rgba(23,157,208,.55)}
+
+/* ── ANIMATIONS ─────────────────────────────────────────────── */
+@keyframes pulse-dot{
+  0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.55)}
+  55%{box-shadow:0 0 0 5px rgba(34,197,94,0)}
+}
+.sc-dot{animation:pulse-dot 2.4s ease-in-out infinite}
+
+/* Swipe hint */
+.swipe-hint{
+  position:absolute;
+  bottom:calc(296px + env(safe-area-inset-bottom));
+  left:50%;transform:translateX(-50%);z-index:8;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  opacity:0;pointer-events:none;
+  animation:hint-fade 3.5s 2.5s ease forwards;
+}
+@keyframes hint-fade{
+  0%{opacity:0;transform:translateX(-50%)}
+  18%{opacity:.65}
+  46%{opacity:.65;transform:translateX(calc(-50% - 11px))}
+  76%{opacity:.65;transform:translateX(calc(-50% + 11px))}
+  100%{opacity:0;transform:translateX(-50%)}
+}
+.sh-icon{font-size:16px;letter-spacing:8px;color:rgba(255,255,255,.55)}
+.sh-txt{font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.9px;font-weight:700;text-transform:uppercase}
+
+/* ── NAV ARROWS (desktop) ─────────────────────────────────── */
+.nav-arrow{
+  display:none;
+  position:absolute;top:50%;z-index:12;
+  width:46px;height:46px;border-radius:50%;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.16);
+  backdrop-filter:blur(14px) saturate(160%);
+  -webkit-backdrop-filter:blur(14px) saturate(160%);
+  color:rgba(255,255,255,.75);font-size:22px;
+  cursor:pointer;
+  align-items:center;justify-content:center;
+  transition:all .22s cubic-bezier(.22,1,.36,1);
+  transform:translateY(-50%);
+  font-family:sans-serif;line-height:1;
+}
+.nav-prev{left:28px}
+.nav-next{right:28px}
+.nav-arrow:hover{
+  background:rgba(255,255,255,.22);color:#fff;
+  border-color:rgba(255,255,255,.28);
+  transform:translateY(-50%) scale(1.08);
+  box-shadow:0 4px 24px rgba(0,0,0,.4);
+}
+.nav-arrow:active{transform:translateY(-50%) scale(.94)}
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media(min-width:600px){
+  .action-panel{max-width:480px;left:50%;transform:translateX(-50%);right:auto;width:100%}
+  .slide-content{padding-left:56px;padding-right:56px;padding-bottom:calc(298px + env(safe-area-inset-bottom))}
+  .sc-h{font-size:clamp(42px,6vw,70px)}
+}
+@media(min-width:768px){
+  .nav-arrow{display:flex}
+  .nav-prev{left:36px}
+  .nav-next{right:36px}
+  .action-panel{
+    max-width:500px;
+    border-radius:22px 22px 0 0;
+    border-top:1px solid rgba(255,255,255,.1);
+    border-left:1px solid rgba(255,255,255,.07);
+    border-right:1px solid rgba(255,255,255,.07);
+    backdrop-filter:blur(28px) saturate(180%);
+    -webkit-backdrop-filter:blur(28px) saturate(180%);
+    background:rgba(6,8,20,.82);
+    padding-bottom:28px;
+  }
+  .slide-content{
+    padding-left:8vw;padding-right:50%;
+    padding-bottom:calc(305px + env(safe-area-inset-bottom));
+  }
+  .sc-h{font-size:clamp(44px,5.5vw,74px)}
+  .sc-p{max-width:400px}
+  .swipe-hint{display:none}
+}
+@media(min-width:1200px){
+  .slide-content{padding-left:10vw;padding-right:52%}
+  .sc-h{font-size:clamp(52px,5vw,82px)}
+  .action-panel{max-width:520px}
+  .nav-prev{left:48px}
+  .nav-next{right:48px}
+  .nav-arrow{width:52px;height:52px;font-size:26px}
+}
+@media(min-height:800px){
+  .slide-content{padding-bottom:calc(286px + env(safe-area-inset-bottom))}
+}
+@media(prefers-reduced-motion:reduce){
+  .sc-inner,.slide,.slide-photo,.stn-card{transition:none!important;animation:none!important}
+  .swipe-hint{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- STORY PROGRESS BARS -->
+  <div class="seg-progress" id="segProgress">
+    <div class="seg"><div class="seg-fill" id="seg0"></div></div>
+    <div class="seg"><div class="seg-fill" id="seg1"></div></div>
+    <div class="seg"><div class="seg-fill" id="seg2"></div></div>
+  </div>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="tb-brand">
+      <div class="tb-logo"><img src="icons/icon.png" alt="MSO"/></div>
+      <div class="tb-text">
+        <div class="tb-name">MSO Digital</div>
+        <div class="tb-tag">Operations Portal</div>
+      </div>
+    </div>
+    <a class="tb-signin" href="login.html">
+      Sign In
+      <span class="arrow">→</span>
+    </a>
+  </header>
+
+  <!-- ════ SLIDE 1 ══════════════════════════════════════════ -->
+  <div class="slide active">
+    <div class="slide-photo"></div>
+    <div class="slide-content">
+      <div class="sc-inner">
+        <div class="sc-eyebrow">
+          <span class="sc-num">01 / 03</span>
+          <span class="sc-rule"></span>
+        </div>
+        <div class="sc-tag">
+          <span class="sc-dot"></span>
+          Both Stations Live · Lagos
+        </div>
+        <h1 class="sc-h">
+          Every litre.<br/>
+          Every naira.<br/>
+          <span class="accent">Accounted.</span>
+        </h1>
+        <p class="sc-p">
+          Real-time operations platform for MSO Limpid Co. Ltd and M&amp;M Oil &amp; Gas Ltd.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ SLIDE 2 ══════════════════════════════════════════ -->
+  <div class="slide">
+    <div class="slide-photo"></div>
+    <div class="slide-content">
+      <div class="sc-inner">
+        <div class="sc-eyebrow">
+          <span class="sc-num">02 / 03</span>
+          <span class="sc-rule"></span>
+        </div>
+        <div class="sc-tag">
+          <span class="sc-dot"></span>
+          Live Sales &amp; Tank Tracking
+        </div>
+        <h1 class="sc-h">
+          Two stations.<br/>
+          <span class="accent">One platform.</span>
+        </h1>
+        <p class="sc-p">
+          Monitor sales, tank levels, discharge, expenses and cash reconciliation — from anywhere.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ SLIDE 3 ══════════════════════════════════════════ -->
+  <div class="slide">
+    <div class="slide-photo"></div>
+    <div class="slide-content">
+      <div class="sc-inner">
+        <div class="sc-eyebrow">
+          <span class="sc-num">03 / 03</span>
+          <span class="sc-rule"></span>
+        </div>
+        <div class="sc-tag">
+          <span class="sc-dot"></span>
+          Role-Based Access Control
+        </div>
+        <h1 class="sc-h">
+          Built for<br/>
+          your <span class="accent">team.</span>
+        </h1>
+        <p class="sc-p">
+          Admin, General Manager, Supervisor and Cashier — each with the right access, nothing more.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- GLOBAL OVERLAY -->
+  <div class="overlay-always"></div>
+
+  <!-- NAV ARROWS (desktop) -->
+  <button class="nav-arrow nav-prev" onclick="prevSlide()" aria-label="Previous slide">&#8249;</button>
+  <button class="nav-arrow nav-next" onclick="nextSlide()" aria-label="Next slide">&#8250;</button>
+
+  <!-- SWIPE HINT -->
+  <div class="swipe-hint">
+    <div class="sh-icon">← →</div>
+    <div class="sh-txt">Swipe to Explore</div>
+  </div>
+
+  <!-- ACTION PANEL -->
+  <div class="action-panel">
+
+    <!-- PWA Install Strip -->
+    <div class="install-strip" id="installStrip">
+      <div class="is-ico">📲</div>
+      <div>
+        <div class="is-txt">Add to Home Screen</div>
+        <div class="is-sub">Install for one-tap access · Works offline</div>
+      </div>
+      <button class="is-btn" id="installBtn">Install</button>
+    </div>
+
+    <!-- Slide Dots -->
+    <div class="dots" id="dots">
+      <div class="dot on" onclick="goTo(0)"></div>
+      <div class="dot"    onclick="goTo(1)"></div>
+      <div class="dot"    onclick="goTo(2)"></div>
+    </div>
+
+    <!-- Station Cards -->
+    <div class="station-cards">
+      <a class="stn-card mso-card" href="login.html?station=mso">
+        <span class="stn-dot mso-dot"></span>
+        <div class="stn-info">
+          <div class="stn-name">MSO Limpid Co.</div>
+          <div class="stn-sub">MSO Limpid Co. Ltd · Lagos</div>
+        </div>
+        <span class="stn-chevron">›</span>
+      </a>
+      <a class="stn-card mrs-card" href="login.html?station=mrs">
+        <span class="stn-dot mrs-dot"></span>
+        <div class="stn-info">
+          <div class="stn-name">M&amp;M Oil &amp; Gas</div>
+          <div class="stn-sub">M&amp;M Oil &amp; Gas Ltd · Lagos</div>
+        </div>
+        <span class="stn-chevron">›</span>
+      </a>
+    </div>
+
+    <!-- General login -->
+    <a class="btn-general" href="login.html">General Login</a>
+
+  </div>
+
+</div>
+
+<script>
+/* ── Auth redirect ── */
+(function(){
+  var u = JSON.parse(sessionStorage.getItem('mso_u') || 'null');
+  if (!u) return;
+  if (u.pick || !u.station) window.location.replace('select.html');
+  else window.location.replace('dashboard-' + u.station + '.html');
+})();
+
+/* ── Slider ── */
+var slides   = document.querySelectorAll('.slide');
+var dotEls   = document.querySelectorAll('.dot');
+var segFills = [
+  document.getElementById('seg0'),
+  document.getElementById('seg1'),
+  document.getElementById('seg2')
+];
+var segEls   = document.querySelectorAll('.seg');
+
+var current  = 0;
+var total    = slides.length;
+var DURATION = 5000;
+var startTime = null, raf, paused = false;
+
+function updateSegs(idx, pct) {
+  segFills.forEach(function(sf, i) {
+    if (i < idx)       { sf.style.width = '100%'; segEls[i].classList.add('done'); }
+    else if (i === idx){ sf.style.width = pct + '%'; segEls[i].classList.remove('done'); }
+    else               { sf.style.width = '0%'; segEls[i].classList.remove('done'); }
+  });
+}
+
+function goTo(idx) {
+  slides[current].classList.remove('active');
+  dotEls[current].classList.remove('on');
+  current = (idx + total) % total;
+  slides[current].classList.add('active');
+  dotEls[current].classList.add('on');
+  resetProgress();
+}
+
+function nextSlide() { goTo(current + 1); }
+function prevSlide() { goTo(current - 1); }
+
+function resetProgress() {
+  cancelAnimationFrame(raf);
+  startTime = null;
+  updateSegs(current, 0);
+  if (!paused) raf = requestAnimationFrame(tick);
+}
+
+function tick(timestamp) {
+  if (!startTime) startTime = timestamp;
+  var elapsed = timestamp - startTime;
+  var pct = Math.min((elapsed / DURATION) * 100, 100);
+  updateSegs(current, pct);
+  if (pct < 100) {
+    raf = requestAnimationFrame(tick);
+  } else {
+    nextSlide();
+  }
+}
+
+raf = requestAnimationFrame(tick);
+
+/* ── Touch / Swipe ── */
+var touchStartX = 0, touchStartY = 0, isDragging = false;
+
+document.addEventListener('touchstart', function(e) {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+  isDragging = true;
+  paused = true;
+  cancelAnimationFrame(raf);
+}, { passive: true });
+
+document.addEventListener('touchend', function(e) {
+  if (!isDragging) return;
+  isDragging = false;
+  var dx = touchStartX - e.changedTouches[0].clientX;
+  var dy = touchStartY - e.changedTouches[0].clientY;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 44) {
+    dx > 0 ? nextSlide() : prevSlide();
+  }
+  setTimeout(function() { paused = false; resetProgress(); }, 600);
+}, { passive: true });
+
+/* ── Keyboard ── */
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight') goTo(current + 1);
+  if (e.key === 'ArrowLeft')  goTo(current - 1);
+  if (e.key === 'Enter')      window.location.href = 'login.html';
+});
+
+/* ── Mouse drag ── */
+var mouseStartX = 0, mouseDown = false;
+document.addEventListener('mousedown', function(e) { mouseStartX = e.clientX; mouseDown = true; });
+document.addEventListener('mouseup', function(e) {
+  if (!mouseDown) return; mouseDown = false;
+  var dx = mouseStartX - e.clientX;
+  if (Math.abs(dx) > 60) dx > 0 ? nextSlide() : prevSlide();
+});
+
+/* ── PWA Install ── */
+var _prompt = null;
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault(); _prompt = e;
+  document.getElementById('installStrip').classList.add('show');
+});
+document.getElementById('installBtn').addEventListener('click', function() {
+  if (!_prompt) return;
+  _prompt.prompt();
+  _prompt.userChoice.then(function() {
+    _prompt = null;
+    document.getElementById('installStrip').classList.remove('show');
+  });
+});
+window.addEventListener('appinstalled', function() {
+  document.getElementById('installStrip').classList.remove('show');
+});
+
+/* ── Service Worker ── */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js', { scope: '/' }).catch(function(){});
+  });
+}
+</script>
+</body>
+</html>

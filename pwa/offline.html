@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#130656"/>
+<link rel="manifest" href="manifest.json"/>
+<title>Offline — MSO Digital Operations</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;
+  background:#0A0D1A;color:#fff;
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:24px;text-align:center;
+  padding-bottom:max(24px, env(safe-area-inset-bottom));
+}
+.wrap{max-width:340px}
+.ico{
+  width:72px;height:72px;border-radius:20px;
+  background:rgba(23,157,208,.12);border:1px solid rgba(23,157,208,.2);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 24px;
+}
+h1{font-size:26px;font-weight:900;margin-bottom:10px;letter-spacing:-.03em}
+p{font-size:14.5px;color:rgba(255,255,255,.45);line-height:1.72;margin-bottom:32px}
+.queued-box{
+  background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.2);
+  border-radius:12px;padding:14px 16px;margin-bottom:28px;
+  font-size:13px;color:rgba(255,255,255,.7);line-height:1.6;
+}
+.queued-count{
+  font-family:'JetBrains Mono',monospace;
+  font-size:28px;font-weight:600;color:#22C55E;display:block;margin-bottom:4px;
+}
+.btns{display:flex;flex-direction:column;gap:10px}
+.btn-retry{
+  width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;
+  background:#179DD0;color:#fff;font-size:14px;font-weight:700;
+  font-family:'Inter',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-back{
+  width:100%;padding:14px;border-radius:12px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.55);font-size:14px;font-weight:600;cursor:pointer;
+  font-family:'Inter',sans-serif;
+}
+.version{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:rgba(255,255,255,.18);margin-top:28px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="ico">
+    <svg width="32" height="32" fill="none" stroke="#179DD0" stroke-width="1.8" viewBox="0 0 24 24">
+      <line x1="1" y1="1" x2="23" y2="23"/>
+      <path d="M16.72 11.06A10.94 10.94 0 0119 12.55"/>
+      <path d="M5 12.55a10.94 10.94 0 015.17-2.39"/>
+      <path d="M10.71 5.05A16 16 0 0122.56 9"/>
+      <path d="M1.42 9a15.91 15.91 0 014.7-2.88"/>
+      <path d="M8.53 16.11a6 6 0 016.95 0"/>
+      <line x1="12" y1="20" x2="12.01" y2="20"/>
+    </svg>
+  </div>
+
+  <h1>You're Offline</h1>
+  <p>No internet connection detected. Any sales records, dips or expenses you enter are saved locally and will sync to Google Sheets the moment you reconnect.</p>
+
+  <div class="queued-box">
+    <span class="queued-count" id="pendingCount">0</span>
+    entries saved locally — ready to sync
+  </div>
+
+  <div class="btns">
+    <button class="btn-retry" onclick="window.location.reload()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <polyline points="23 4 23 10 17 10"/>
+        <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+      </svg>
+      Try Again
+    </button>
+    <button class="btn-back" onclick="window.history.back()">← Go Back</button>
+  </div>
+
+  <div class="version">MSO Digital Operations · v1.0.0</div>
+</div>
+
+<script src="/js/pwa-core.js"></script>
+<script>
+async function loadPendingCount() {
+  const stores = ['pending_sales','pending_dips','pending_expenses','pending_cashup','pending_discharge'];
+  let total = 0;
+  for (const s of stores) {
+    try { total += await MSO.db.count(s); } catch(_) {}
+  }
+  document.getElementById('pendingCount').textContent = total;
+}
+loadPendingCount();
+window.addEventListener('online', () => window.location.reload());
+</script>
+</body>
+</html>
